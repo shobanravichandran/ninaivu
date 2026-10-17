@@ -69,8 +69,11 @@ def record_usage(label: str, message) -> dict:
     if log is not None:
         log.append(entry)
     if settings.usage_ledger:
-        with open(settings.usage_ledger, "a", encoding="utf-8") as ledger:
-            ledger.write(json.dumps(entry) + "\n")
+        try:
+            with open(settings.usage_ledger, "a", encoding="utf-8") as ledger:
+                ledger.write(json.dumps(entry) + "\n")
+        except OSError:  # read-only disk (e.g. Vercel): the per-request log still has the cost
+            pass
     return entry
 
 
