@@ -1,11 +1,13 @@
 :root {
-  --bg: #f7f7f5;
-  --surface: #ffffff;
-  --text: #1d1d1b;
-  --muted: #6b6b66;
-  --border: #e3e2dd;
+  --bg: #f9f9f7;
+  --surface: #fcfcfb;
+  --text: #0b0b0b;
+  --text-secondary: #52514e;
+  --muted: #6f6e69;
+  --border: #e1e0d9;
   --accent: #b4532a;
   --accent-soft: #f6e6dc;
+  --code-bg: #f1f0eb;
   --radius: 10px;
   font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
   color: var(--text);
@@ -14,13 +16,15 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --bg: #161615;
-    --surface: #1f1f1d;
-    --text: #ecebe7;
+    --bg: #0d0d0d;
+    --surface: #1a1a19;
+    --text: #f0efec;
+    --text-secondary: #c3c2b7;
     --muted: #9b9a94;
-    --border: #33322f;
+    --border: #2c2c2a;
     --accent: #e08a5e;
     --accent-soft: #3a2a21;
+    --code-bg: #232321;
   }
 }
 
@@ -39,12 +43,13 @@ body {
   height: 100vh;
 }
 
+/* Top bar */
 .topbar {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 16px;
-  padding: 12px 16px;
+  gap: 12px 16px;
+  padding: 10px 16px;
   border-bottom: 1px solid var(--border);
   background: var(--surface);
 }
@@ -61,10 +66,21 @@ body {
   font-size: 13px;
 }
 
+.cost {
+  font-variant-numeric: tabular-nums;
+  font-size: 13px;
+  padding: 4px 10px;
+  border: 1px solid var(--border);
+  border-radius: 999px;
+}
+
 .muted {
   color: var(--muted);
   font-weight: normal;
-  font-size: 0.9em;
+}
+
+.small {
+  font-size: 12px;
 }
 
 .notice {
@@ -75,24 +91,30 @@ body {
   font-size: 13px;
 }
 
+/* Layout */
 .columns {
   flex: 1;
   min-height: 0;
   display: grid;
-  grid-template-columns: 1.2fr 1fr 1fr;
+  grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.9fr) minmax(0, 1.25fr);
   gap: 12px;
   padding: 12px 16px 16px;
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1000px) {
   .columns {
-    grid-template-columns: 1fr;
+    grid-template-columns: minmax(0, 1fr);
+    overflow: auto;
+  }
+  .panel {
+    min-height: 420px;
   }
 }
 
 .panel {
   display: flex;
   flex-direction: column;
+  min-width: 0;
   min-height: 0;
   overflow: auto;
   padding: 12px;
@@ -116,8 +138,7 @@ body {
 
 .panel h3 {
   font-size: 13px;
-  color: var(--muted);
-  margin: 12px 0 4px;
+  margin: 14px 0 4px;
 }
 
 .panel ul,
@@ -125,17 +146,14 @@ body {
   margin: 0;
   padding-left: 18px;
   font-size: 14px;
+  line-height: 1.45;
 }
 
-.tabs {
-  justify-content: flex-start;
+.panel li + li {
+  margin-top: 4px;
 }
 
-.tabs .active {
-  background: var(--accent-soft);
-  border-color: var(--accent);
-}
-
+/* Controls */
 button,
 select,
 input {
@@ -157,16 +175,35 @@ button:disabled {
   cursor: default;
 }
 
+button.link {
+  border: 0;
+  padding: 0;
+  background: none;
+  text-align: left;
+}
+
+button.link code {
+  text-decoration: underline;
+  text-decoration-color: var(--border);
+  text-underline-offset: 3px;
+}
+
+code {
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: 12.5px;
+}
+
 .badge {
   display: inline-block;
   margin-right: 6px;
   padding: 1px 8px;
   border-radius: 999px;
   background: var(--accent-soft);
-  color: var(--accent);
+  color: var(--text);
   font-size: 12px;
 }
 
+/* Chat */
 .messages {
   flex: 1;
   list-style: none;
@@ -177,10 +214,11 @@ button:disabled {
 }
 
 .msg {
-  max-width: 85%;
+  max-width: 88%;
   padding: 8px 12px;
   border-radius: var(--radius);
   border: 1px solid var(--border);
+  white-space: pre-wrap;
 }
 
 .msg.customer {
@@ -190,9 +228,26 @@ button:disabled {
 
 .msg.system {
   align-self: center;
+  max-width: 95%;
   color: var(--muted);
   font-size: 13px;
   border-style: dashed;
+}
+
+.msg.pending {
+  animation: pulse 1.4s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.45;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .msg.pending {
+    animation: none;
+  }
 }
 
 .composer {
@@ -203,4 +258,130 @@ button:disabled {
 
 .composer input {
   flex: 1;
+}
+
+/* Memory */
+.facts {
+  list-style: none;
+  padding-left: 0 !important;
+}
+
+.facts li {
+  padding: 4px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.facts li.recalled {
+  border-left: 3px solid var(--accent);
+  padding-left: 8px;
+}
+
+.facts .old {
+  color: var(--muted);
+  text-decoration: line-through;
+  font-size: 13px;
+}
+
+/* Insight tabs */
+.insight {
+  overflow: hidden;
+}
+
+.tabs {
+  justify-content: flex-start;
+}
+
+.tabs .active {
+  background: var(--accent-soft);
+  border-color: var(--accent);
+}
+
+.count {
+  margin-left: 6px;
+  font-size: 11px;
+  color: var(--muted);
+}
+
+.tab-body {
+  flex: 1;
+  min-height: 0;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+}
+
+.graph {
+  flex: 1;
+  min-height: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.graph-canvas {
+  position: relative;
+  flex: 1;
+  min-height: 260px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.graph-canvas > p {
+  position: absolute;
+  inset: 12px auto auto 12px;
+  margin: 0;
+  z-index: 1;
+}
+
+/* The canvas is sized from this box, so keep it out of the layout flow. */
+.graph-layer {
+  position: absolute;
+  inset: 0;
+}
+
+.legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 14px;
+  list-style: none;
+  padding: 8px 0 0 !important;
+  font-size: 12px !important;
+}
+
+.legend li + li {
+  margin-top: 0;
+}
+
+.swatch {
+  display: inline-block;
+  width: 10px;
+  height: 10px;
+  margin-right: 5px;
+  border-radius: 50%;
+  vertical-align: -1px;
+}
+
+.queries li {
+  margin-bottom: 4px;
+}
+
+.cypher {
+  margin: 6px 0 8px;
+  padding: 8px 10px;
+  border-radius: 8px;
+  background: var(--code-bg);
+  font-family: ui-monospace, "Cascadia Code", Consolas, monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  overflow-x: auto;
+}
+
+.trace li {
+  padding: 4px 0;
+}
+
+.trace .handoff {
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: var(--accent-soft);
 }

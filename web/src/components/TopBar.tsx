@@ -9,13 +9,15 @@ interface Props {
   onCustomer: (id: string) => void;
   clockOffsetDays: number;
   onAdvanceClock: () => void;
+  canAdvance: boolean;
+  cost: { lastTurn: number; total: number };
 }
 
 export default function TopBar(props: Props) {
   return (
     <header className="topbar">
       <h1>
-        Ninaivu <span className="muted">graph memory for support agents</span>
+        Ninaivu <span className="muted">graph memory for support agents · FalkorDB</span>
       </h1>
       <label>
         Tenant
@@ -37,9 +39,17 @@ export default function TopBar(props: Props) {
           ))}
         </select>
       </label>
-      <button onClick={props.onAdvanceClock} title="Demo clock: jump a week ahead">
-        ⏩ +7 days {props.clockOffsetDays > 0 && <span className="muted">(now +{props.clockOffsetDays}d)</span>}
+      <button
+        onClick={props.onAdvanceClock}
+        disabled={!props.canAdvance}
+        title={props.canAdvance ? "Demo clock: jump a week ahead" : "End the session first"}
+      >
+        ⏩ +7 days
       </button>
+      {props.clockOffsetDays > 0 && <span className="muted small">clock +{props.clockOffsetDays}d</span>}
+      <span className="cost" title="Claude API cost in this browser session">
+        ${props.cost.total.toFixed(3)} <span className="muted small">last ${props.cost.lastTurn.toFixed(3)}</span>
+      </span>
     </header>
   );
 }

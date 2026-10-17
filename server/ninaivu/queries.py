@@ -22,6 +22,13 @@ def load_query(name: str) -> str:
     return _strip_comments(path.read_text(encoding="utf-8"))
 
 
+def query_source(name: str) -> str:
+    """The .cypher file as written, comments included (shown in the UI's Query Inspector)."""
+    if name not in all_query_names():
+        raise KeyError(f"unknown query: {name}")
+    return (QUERY_DIR / f"{name}.cypher").read_text(encoding="utf-8").strip()
+
+
 def schema_statements(embed_dim: int) -> list[str]:
     """Index statements; the vector dimension is substituted because OPTIONS can't take parameters."""
     text = load_query(SCHEMA_FILE).replace("$EMBED_DIM", str(embed_dim))

@@ -11,6 +11,7 @@ from ninaivu.agents.curator import run_curator
 from ninaivu.agents.orchestrator import handle_message
 from ninaivu.config import TENANTS
 from ninaivu.db import UnknownTenant, get_db, query_log
+from ninaivu.queries import query_source
 
 app = FastAPI(title="Ninaivu API")
 
@@ -96,7 +97,17 @@ def end_session(req: EndSessionRequest) -> dict:
 
 @app.get("/api/memory")
 def memory_pack(tenant: str, customer_id: str) -> dict:
-    return memory.context_pack(tenant, customer_id)
+    pack = memory.context_pack(tenant, customer_id)
+    pack["fact_history"] = memory.fact_history(tenant, customer_id)
+    return pack
+
+
+@app.get("/api/cypher")
+def cypher(name: str) -> dict:
+    try:
+        return {"name": name, "cypher": query_source(name)}
+    except KeyError:
+        return JSONResponse(status_code=404, content={"detail": f"Unknown query: {name}"})
 
 
 @app.get("/api/graph")

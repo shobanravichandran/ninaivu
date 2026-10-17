@@ -170,3 +170,6 @@ def test_api_tenants_and_unknown_tenant():
     client = TestClient(main.app)
     assert {t["id"] for t in client.get("/api/tenants").json()} == {"acme", "zenfiber"}
     assert client.get("/api/customers", params={"tenant": "nope"}).status_code == 404
+    cypher = client.get("/api/cypher", params={"name": "issue_handoff"}).json()["cypher"]
+    assert cypher.startswith("// Coordination") and "ASSIGNED_TO" in cypher
+    assert client.get("/api/cypher", params={"name": "../secrets"}).status_code == 404

@@ -16,6 +16,11 @@ export interface QueryRun {
   ms: number;
 }
 
+export interface Usage {
+  calls: number;
+  cost_usd: number;
+}
+
 export interface OpenIssue {
   issue_id: string;
   title: string;
@@ -40,12 +45,21 @@ export interface Fact {
   since: number;
 }
 
+export interface FactVersion {
+  fact_id: string;
+  key: string;
+  text: string;
+  valid_from: number;
+  valid_to: number | null;
+}
+
 export interface ContextPack {
   customer: Customer;
   open_issues: OpenIssue[];
   recent_sessions: SessionSummary[];
   facts: Fact[];
   recalled?: { key: string; text: string; distance: number }[];
+  fact_history?: FactVersion[];
 }
 
 export interface AgentReply {
@@ -75,6 +89,7 @@ export interface ChatResponse {
   trace: TraceStep[];
   queries: QueryRun[];
   memory: ContextPack;
+  usage: Usage;
 }
 
 export interface EndSessionResponse {
@@ -83,20 +98,19 @@ export interface EndSessionResponse {
   facts_added: string[];
   facts_superseded: string[];
   queries: QueryRun[];
+  usage: Usage;
+}
+
+export interface GraphNode {
+  id: string;
+  label: string;
+  name: string;
+  current?: boolean;
 }
 
 export interface GraphData {
-  nodes: { id: string; label: string; name: string }[];
+  nodes: GraphNode[];
   links: { source: string; target: string; type: string }[];
-}
-
-export interface HandoffStep {
-  title: string;
-  ts: number | null;
-  from_agent: string | null;
-  to_agent: string | null;
-  reason: string | null;
-  context: string | null;
 }
 
 export interface ChatMessage {

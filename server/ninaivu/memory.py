@@ -215,6 +215,11 @@ def list_customers(tenant: str) -> list[dict]:
     return db.run(tenant, "customers_list", read_only=True)
 
 
+def fact_history(tenant: str, customer_id: str) -> list[dict]:
+    """customer_fact_history: current and superseded versions, for the memory panel."""
+    return db.run(tenant, "customer_fact_history", {"cid": customer_id}, read_only=True)
+
+
 _DISPLAY = {
     "Customer": lambda p: p.get("name", ""),
     "Session": lambda p: (p.get("summary") or "Session")[:40],
