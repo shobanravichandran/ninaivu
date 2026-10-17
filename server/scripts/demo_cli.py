@@ -15,7 +15,7 @@ from ninaivu.db import query_log
 
 SESSION_1 = [
     "Hi, my order A-1001 arrived today and the earbuds case is cracked.",
-    "Yes, I can share a photo. A refund is fine. Please send updates on WhatsApp, not email.",
+    "There's a crack right across the lid of the case. A refund is fine. Please send updates on WhatsApp, not email.",
 ]
 SESSION_2 = ["Hi again, any update?"]
 

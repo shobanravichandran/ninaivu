@@ -22,7 +22,7 @@ def use_fake_embeddings(enabled: bool = True) -> None:
 def _client():
     import voyageai
 
-    return voyageai.Client()
+    return voyageai.Client(max_retries=4)  # backs off on rate limits instead of failing the turn
 
 
 def _hash_vector(text: str) -> list[float]:

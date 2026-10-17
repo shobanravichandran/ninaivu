@@ -170,7 +170,7 @@ def build_tools(ctx: TurnContext, state: TurnState) -> list:
 
     @beta_tool
     def find_playbook(symptom: str) -> str:
-        """Find proven playbooks for a problem, best success rate first. Follow the top one.
+        """Find playbooks that match a problem. Only close matches are returned, best success rate first: follow the top one.
 
         Args:
             symptom: The problem in a sentence, e.g. "earbuds won't pair with phone".

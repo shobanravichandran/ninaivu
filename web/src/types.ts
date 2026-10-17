@@ -45,7 +45,7 @@ export interface ContextPack {
   open_issues: OpenIssue[];
   recent_sessions: SessionSummary[];
   facts: Fact[];
-  recalled?: { key: string; text: string; score: number }[];
+  recalled?: { key: string; text: string; distance: number }[];
 }
 
 export interface AgentReply {

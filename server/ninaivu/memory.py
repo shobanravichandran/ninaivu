@@ -138,10 +138,15 @@ def remember_fact(tenant: str, customer_id: str, session_id: str, key: str, text
 
 # --- Procedural: playbooks ------------------------------------------------------------
 
+# Near-duplicate playbooks sit within ~0.04 cosine distance of each other; unrelated ones are much further.
+PLAYBOOK_MARGIN = 0.05
+
+
 def find_playbooks(tenant: str, category: str, symptom: str) -> list[dict]:
-    """playbook_find, ranked by learned success rate."""
+    """playbook_find: the closest playbooks for the symptom, near-equal matches ranked by success rate."""
     qvec = embed([symptom], input_type="query")[0]
-    return db.run(tenant, "playbook_find", {"qvec": qvec, "category": category}, read_only=True)
+    return db.run(tenant, "playbook_find", {"qvec": qvec, "category": category, "margin": PLAYBOOK_MARGIN},
+                  read_only=True)
 
 
 def record_playbook_outcome(tenant: str, customer_id: str, issue_id: str, playbook_id: str, success: bool, now: int) -> dict:

@@ -8,7 +8,7 @@ import threading
 
 import pytest
 
-from ninaivu import config, coordination, memory
+from ninaivu import config, coordination, embeddings, memory
 from ninaivu.db import graph_for
 from ninaivu.embeddings import use_fake_embeddings
 from ninaivu.schema import ensure_schema
@@ -39,14 +39,21 @@ def _base(tenant: str) -> None:
 
 @pytest.fixture(scope="module", autouse=True)
 def graphs():
+    was_fake = embeddings._fake
     use_fake_embeddings()
     config.TENANTS.update({A: "Pytest A", B: "Pytest B"})
-    _base(A)
-    _base(B)
-    yield
-    for tenant in (A, B):
-        graph_for(tenant).delete()
-        config.TENANTS.pop(tenant)
+    try:
+        _base(A)
+        _base(B)
+        yield
+    finally:  # clean up even when setup fails, so the test tenants never leak into other tests
+        for tenant in (A, B):
+            try:
+                graph_for(tenant).delete()
+            except Exception:
+                pass
+            config.TENANTS.pop(tenant, None)
+        use_fake_embeddings(was_fake)
 
 
 def test_session_history_is_ordered_and_linked():
