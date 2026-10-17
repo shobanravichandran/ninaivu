@@ -1,0 +1,186 @@
+# Procedural memory seed: 15 playbooks per tenant (fictional).
+# success_count / fail_count give agents something to rank on from the first demo turn;
+# some near-duplicates have deliberately different track records.
+acme:
+  - id: pb-acme-damaged-photo-refund
+    name: Damaged item - photo check, then full refund
+    category: billing
+    steps: Ask for a photo of the damage; confirm the order and item; initiate a full refund; offer a replacement at no cost.
+    success_count: 18
+    fail_count: 2
+  - id: pb-acme-damaged-replace-only
+    name: Damaged item - replacement only
+    category: billing
+    steps: Confirm the order; ship a replacement; no refund.
+    success_count: 6
+    fail_count: 9
+  - id: pb-acme-missing-item
+    name: Missing item in package - partial refund
+    category: billing
+    steps: Confirm which item is missing against the order; refund that item's price; flag the warehouse batch.
+    success_count: 14
+    fail_count: 3
+  - id: pb-acme-late-delivery-redispatch
+    name: Late delivery - courier trace and re-dispatch
+    category: billing
+    steps: Check the courier status; if stuck for 3+ days, re-dispatch from the nearest warehouse; share the new tracking id.
+    success_count: 22
+    fail_count: 5
+  - id: pb-acme-double-charge
+    name: Charged twice - verify and reverse duplicate
+    category: billing
+    steps: Match both charges to the order; reverse the duplicate charge; confirm the reversal timeline (5-7 working days).
+    success_count: 11
+    fail_count: 1
+  - id: pb-acme-refund-status
+    name: Refund not received - status check
+    category: billing
+    steps: Look up the refund on the order; if initiated under 7 days ago, share the expected date; if older, escalate to payments.
+    success_count: 19
+    fail_count: 2
+  - id: pb-acme-wrong-size
+    name: Wrong size delivered - free exchange
+    category: billing
+    steps: Confirm the size ordered vs received; book a free pickup; ship the correct size once picked up.
+    success_count: 9
+    fail_count: 2
+  - id: pb-acme-coupon-not-applied
+    name: Coupon not applied - manual credit
+    category: billing
+    steps: Verify the coupon was valid at order time; credit the discount as store credit; apologise.
+    success_count: 8
+    fail_count: 3
+  - id: pb-acme-app-login-reset
+    name: App login loop - clear session and reset password
+    category: tech
+    steps: Log out on all devices; clear app cache; reset the password; log in again.
+    success_count: 25
+    fail_count: 4
+  - id: pb-acme-app-reinstall
+    name: App login loop - reinstall only
+    category: tech
+    steps: Uninstall the app; reinstall from the store; log in again.
+    success_count: 7
+    fail_count: 10
+  - id: pb-acme-earbuds-pairing
+    name: Earbuds won't pair - factory reset
+    category: tech
+    steps: Put both earbuds in the case; hold the case button 15 seconds until the light flashes amber; forget the device on the phone; pair again.
+    success_count: 30
+    fail_count: 6
+  - id: pb-acme-earbuds-one-side
+    name: Only one earbud plays - re-sync
+    category: tech
+    steps: Clean the charging contacts; charge both earbuds 30 minutes; factory reset; pair again.
+    success_count: 16
+    fail_count: 5
+  - id: pb-acme-kettle-not-heating
+    name: Kettle not heating - base and fuse check
+    category: tech
+    steps: Check the base is seated; try another socket; check the plug fuse; if still dead, start a warranty replacement.
+    success_count: 12
+    fail_count: 4
+  - id: pb-acme-smartwatch-sync
+    name: Smartwatch not syncing - bluetooth and app permissions
+    category: tech
+    steps: Turn bluetooth off and on; allow background activity for the app; restart the watch; sync again.
+    success_count: 15
+    fail_count: 6
+  - id: pb-acme-payment-failed
+    name: Payment failed at checkout - retry guidance
+    category: tech
+    steps: Check if money was debited; if not, retry with UPI or another card; if debited, the auto-reversal happens in 48 hours.
+    success_count: 20
+    fail_count: 4
+
+zenfiber:
+  - id: pb-zen-slow-wifi-channel
+    name: Slow Wi-Fi - router restart and channel change
+    category: tech
+    steps: Restart the router; switch to the 5 GHz band; change to a less crowded channel; run a speed test.
+    success_count: 31
+    fail_count: 7
+  - id: pb-zen-slow-wifi-restart-only
+    name: Slow Wi-Fi - restart only
+    category: tech
+    steps: Restart the router and wait two minutes.
+    success_count: 9
+    fail_count: 14
+  - id: pb-zen-no-internet-los
+    name: No internet - red LOS light
+    category: tech
+    steps: Check the fibre cable is not bent; reseat the fibre connector; if LOS stays red, book a technician visit.
+    success_count: 17
+    fail_count: 3
+  - id: pb-zen-pppoe-reset
+    name: Connected but no internet - PPPoE reset
+    category: tech
+    steps: Open the router admin page; re-enter the PPPoE username and password; reboot; test.
+    success_count: 13
+    fail_count: 4
+  - id: pb-zen-mesh-dead-zone
+    name: Dead zone at home - add mesh extender
+    category: tech
+    steps: Run a room-by-room speed test; place the mesh extender halfway between router and dead zone; pair with WPS.
+    success_count: 18
+    fail_count: 3
+  - id: pb-zen-iptv-buffering
+    name: IPTV buffering - wired connection and QoS
+    category: tech
+    steps: Connect the set-top box over ethernet; enable QoS for IPTV in the router; restart the box.
+    success_count: 10
+    fail_count: 4
+  - id: pb-zen-wifi-password
+    name: Forgot Wi-Fi password - reset from app
+    category: tech
+    steps: Open the ZenFiber app; go to Router settings; set a new Wi-Fi password; reconnect devices.
+    success_count: 24
+    fail_count: 1
+  - id: pb-zen-router-overheating
+    name: Router overheating and dropping - ventilation and replacement
+    category: tech
+    steps: Move the router to an open shelf; check the adapter rating; if it still drops, swap the router.
+    success_count: 8
+    fail_count: 3
+  - id: pb-zen-billing-double-charge
+    name: Double charge - verify and reverse
+    category: billing
+    steps: Match both charges to the invoice; reverse the duplicate; send a confirmation.
+    success_count: 12
+    fail_count: 1
+  - id: pb-zen-outage-credit
+    name: Outage over 24 hours - pro-rata credit
+    category: billing
+    steps: Confirm the outage window from the ticket; credit the pro-rata amount on the next bill; share the credit note.
+    success_count: 15
+    fail_count: 2
+  - id: pb-zen-plan-upgrade
+    name: Plan upgrade mid-cycle - prorated billing
+    category: billing
+    steps: Explain prorated charges; upgrade the plan from today; confirm the new monthly amount.
+    success_count: 20
+    fail_count: 2
+  - id: pb-zen-late-fee-waiver
+    name: Late fee waiver - first-time courtesy
+    category: billing
+    steps: Check payment history; if no late payment in 12 months, waive the late fee once; set up autopay.
+    success_count: 11
+    fail_count: 2
+  - id: pb-zen-autopay-failed
+    name: Autopay failed - mandate refresh
+    category: billing
+    steps: Check the mandate status; ask the customer to re-approve the UPI mandate; retry the charge.
+    success_count: 9
+    fail_count: 4
+  - id: pb-zen-relocation
+    name: Moving home - service relocation
+    category: billing
+    steps: Check feasibility at the new address; schedule the shift; waive relocation fee for gold tier and above.
+    success_count: 7
+    fail_count: 2
+  - id: pb-zen-refund-deposit
+    name: Disconnection - deposit refund
+    category: billing
+    steps: Confirm router returned; settle the final bill; refund the deposit within 10 working days.
+    success_count: 10
+    fail_count: 1

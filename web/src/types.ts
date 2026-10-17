@@ -1,0 +1,106 @@
+// Mirrors the API contract in PLAN.md §9.
+
+export interface Tenant {
+  id: string;
+  name: string;
+}
+
+export interface Customer {
+  id: string;
+  name: string;
+  tier: string;
+}
+
+export interface QueryRun {
+  name: string;
+  ms: number;
+}
+
+export interface OpenIssue {
+  issue_id: string;
+  title: string;
+  category: string;
+  status: string;
+  opened_at: number;
+  owner: string | null;
+  order_id: string | null;
+}
+
+export interface SessionSummary {
+  session_id: string;
+  started_at: number;
+  summary: string;
+  sentiment: string;
+}
+
+export interface Fact {
+  fact_id: string;
+  key: string;
+  text: string;
+  since: number;
+}
+
+export interface ContextPack {
+  customer: Customer;
+  open_issues: OpenIssue[];
+  recent_sessions: SessionSummary[];
+  facts: Fact[];
+  recalled?: { key: string; text: string; score: number }[];
+}
+
+export interface AgentReply {
+  agent: string;
+  text: string;
+}
+
+export interface TraceStep {
+  agent: string;
+  tool: string;
+  input: Record<string, unknown>;
+  result: string;
+}
+
+export interface ChatRequest {
+  tenant: string;
+  customer_id: string;
+  session_id: string | null;
+  message: string;
+  clock_offset_days: number;
+}
+
+export interface ChatResponse {
+  session_id: string;
+  replies: AgentReply[];
+  owner: string;
+  trace: TraceStep[];
+  queries: QueryRun[];
+  memory: ContextPack;
+}
+
+export interface EndSessionResponse {
+  summary: string;
+  sentiment: string;
+  facts_added: string[];
+  facts_superseded: string[];
+  queries: QueryRun[];
+}
+
+export interface GraphData {
+  nodes: { id: string; label: string; name: string }[];
+  links: { source: string; target: string; type: string }[];
+}
+
+export interface HandoffStep {
+  title: string;
+  ts: number | null;
+  from_agent: string | null;
+  to_agent: string | null;
+  reason: string | null;
+  context: string | null;
+}
+
+export interface ChatMessage {
+  role: "customer" | "agent" | "system";
+  agent?: string;
+  text: string;
+}

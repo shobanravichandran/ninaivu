@@ -1,0 +1,5 @@
+fastapi>=0.115
+falkordb>=1.8
+anthropic>=1.15
+voyageai>=0.3
+pyyaml>=6.0
