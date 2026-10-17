@@ -142,6 +142,26 @@ def test_curator_writes_summary_and_facts(monkeypatch):
     assert result["facts_superseded"] == ["f-old"]
 
 
+def test_cost_tracking_logs_calls_and_ledger(monkeypatch, tmp_path):
+    from dataclasses import replace
+    from types import SimpleNamespace
+
+    from ninaivu import llm
+
+    usage = SimpleNamespace(input_tokens=1_000_000, output_tokens=100_000,
+                            cache_read_input_tokens=1_000_000, cache_creation_input_tokens=0)
+    assert llm.cost_usd("claude-opus-5-5", usage) == pytest.approx(4.0 + 2.0 + 0.2)
+    ledger = tmp_path / "usage.jsonl"
+    monkeypatch.setattr(llm, "settings", replace(llm.settings, usage_ledger=str(ledger)))
+    token = llm.usage_log.set([])
+    try:
+        llm.record_usage("agent:triage", SimpleNamespace(model="claude-opus-5-5", usage=usage))
+        assert llm.summarize(llm.usage_log.get()) == {"calls": 1, "cost_usd": 6.2}
+    finally:
+        llm.usage_log.reset(token)
+    assert json.loads(ledger.read_text(encoding="utf-8"))["label"] == "agent:triage"
+
+
 def test_api_tenants_and_unknown_tenant():
     from fastapi.testclient import TestClient
 

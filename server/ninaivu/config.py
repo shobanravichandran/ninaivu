@@ -3,12 +3,19 @@ import os
 from dataclasses import dataclass
 from pathlib import Path
 
+REPO_ROOT = Path(__file__).resolve().parents[2]
+
 try:  # local dev only; on Vercel the env vars come from the project settings
     from dotenv import load_dotenv
 
-    load_dotenv(Path(__file__).resolve().parents[2] / ".env")
+    load_dotenv(REPO_ROOT / ".env")
 except ImportError:
     pass
+
+
+def _path(name: str) -> str | None:
+    value = os.getenv(name, "").strip()
+    return str(REPO_ROOT / value) if value and not Path(value).is_absolute() else value or None
 
 
 def _bool(name: str, default: bool = False) -> bool:
@@ -27,6 +34,7 @@ class Settings:
     embed_model: str = os.getenv("VOYAGE_MODEL", "voyage-4-lite")
     embed_dim: int = int(os.getenv("EMBED_DIM", "1024"))
     fake_embeddings: bool = _bool("EMBEDDINGS_FAKE")
+    usage_ledger: str | None = _path("USAGE_LEDGER")  # local JSONL cost ledger; leave unset on Vercel
 
 
 settings = Settings()

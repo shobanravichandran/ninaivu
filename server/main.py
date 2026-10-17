@@ -6,7 +6,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-from ninaivu import coordination, memory
+from ninaivu import coordination, llm, memory
 from ninaivu.agents.curator import run_curator
 from ninaivu.agents.orchestrator import handle_message
 from ninaivu.config import TENANTS
@@ -36,14 +36,17 @@ async def llm_error(_: Request, exc: anthropic.APIError) -> JSONResponse:
 
 
 def _with_query_log(fn: Callable[..., dict], *args: Any) -> dict:
-    """Run fn and attach the named Cypher queries it executed (for the Query Inspector)."""
-    token = query_log.set([])
+    """Run fn and attach the named Cypher queries it executed (Query Inspector) and the model cost."""
+    q_token = query_log.set([])
+    u_token = llm.usage_log.set([])
     try:
         result = fn(*args)
         result["queries"] = query_log.get()
+        result["usage"] = llm.summarize(llm.usage_log.get())
         return result
     finally:
-        query_log.reset(token)
+        query_log.reset(q_token)
+        llm.usage_log.reset(u_token)
 
 
 class ChatRequest(BaseModel):

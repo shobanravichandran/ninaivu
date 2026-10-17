@@ -37,6 +37,7 @@ def _curate(transcript: list[dict], facts: list[dict]) -> CuratorOutput | None:
         output_format=CuratorOutput,
         **llm.request_kwargs("low"),
     )
+    llm.record_usage("curator", response)
     if response.stop_reason == "refusal":
         return None
     return response.parsed_output

@@ -3,6 +3,9 @@
 .env.*
 !.env.example
 
+# local API cost ledger
+usage.jsonl
+
 # python
 __pycache__/
 *.pyc

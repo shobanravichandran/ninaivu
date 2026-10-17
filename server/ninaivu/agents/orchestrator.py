@@ -73,7 +73,10 @@ def run_agent(agent: str, ctx: TurnContext, state: TurnState, user_turn: str) ->
         cache_control={"type": "ephemeral"},
         **llm.request_kwargs(AGENT_EFFORT[agent]),
     )
-    final = runner.until_done()
+    final = None
+    for message in runner:  # one item per model call, so every call's cost is recorded
+        llm.record_usage(f"agent:{agent}", message)
+        final = message
     if final.stop_reason == "refusal":
         return llm.REFUSAL_REPLY
     return llm.text_of(final) or "(no reply)"
