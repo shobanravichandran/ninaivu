@@ -3,8 +3,10 @@
 **Graph memory for support agent swarms, built on FalkorDB.**
 Graph Hacks: Context for AI Agents (WeMakeDevs × FalkorDB) · **Track 02: Agent Memory and Coordination**
 
-> 🚧 **Status: in progress.** Memory layer, coordination, seed data and agents (Triage, Billing, Tech, Curator)
-> are implemented. Next: verify against a live FalkorDB, then the UI panels and load test ([PLAN.md](PLAN.md) §13).
+**Live demo: <https://ninaivu-peach.vercel.app>** · API: <https://ninaivu-api.vercel.app/api/health>
+
+> 🚧 **Status: deployed, docs in progress.** Agents, memory layer, UI and load test are done; README sections below
+> marked _to be finalised_ come next ([PLAN.md](PLAN.md) §13).
 
 Three support agents (Triage, Billing, Tech) and a Memory Curator share one memory, and **coordinate only through the graph**.
 Ownership, handoffs, conversation history, customer facts, and learned playbooks all live in FalkorDB, one graph per tenant.
@@ -50,10 +52,16 @@ npm run dev                     # http://localhost:5173, proxies /api to :8000
 
 ## Deploying (two Vercel projects, one repo)
 
-| Project | Root directory | Notes |
-|---|---|---|
-| `ninaivu-api` | `server` | FastAPI preset. Env vars: `ANTHROPIC_API_KEY`, `VOYAGE_API_KEY`, `FALKORDB_*`, `EMBED_DIM` |
-| `ninaivu-web` | `web` | Vite preset. Set the API domain in `web/vercel.json` |
+| Project | Root directory | Domain | Notes |
+|---|---|---|---|
+| `ninaivu-api` | `server` | ninaivu-api.vercel.app | FastAPI preset. Env vars: `FALKORDB_HOST/PORT/USERNAME/PASSWORD/SSL`, `ANTHROPIC_API_KEY`, `NINAIVU_MODEL`, `VOYAGE_API_KEY`, `VOYAGE_MODEL`, `EMBED_DIM` (leave `USAGE_LEDGER` unset) |
+| `ninaivu` (web) | `web` | ninaivu-peach.vercel.app | Vite preset, no env vars. `web/vercel.json` rewrites `/api/*` to the API project, so the browser sees one origin |
+
+FalkorDB Cloud runs in AWS us-east-1, next to Vercel's default region: a full agent turn spends ~40 ms in FalkorDB
+(32 queries). Concurrency numbers: [server/scripts/load_test_results.md](server/scripts/load_test_results.md).
+
+Every Claude call logs its token cost; the UI shows cost per turn, and locally `python -m scripts.usage_report`
+sums the `usage.jsonl` ledger.
 
 ## Graph data model
 
