@@ -9,6 +9,7 @@ interface Props {
   onCustomer: (id: string) => void;
   clockOffsetDays: number;
   onAdvanceClock: () => void;
+  onResetClock: () => void;
   canAdvance: boolean;
   cost: { lastTurn: number; total: number };
 }
@@ -47,7 +48,14 @@ export default function TopBar(props: Props) {
         ⏩ +7 days
       </button>
       {!props.canAdvance && <span className="muted small">end the session to jump ahead</span>}
-      {props.clockOffsetDays > 0 && <span className="muted small">clock +{props.clockOffsetDays}d</span>}
+      {props.clockOffsetDays > 0 && (
+        <>
+          <span className="muted small">clock +{props.clockOffsetDays} days</span>
+          <button onClick={props.onResetClock} disabled={!props.canAdvance} title="Set the demo clock back to today">
+            Back to today
+          </button>
+        </>
+      )}
       <span className="cost" title="What the Claude calls in this browser session cost">
         Model cost ${props.cost.total.toFixed(3)} <span className="muted small">· last turn ${props.cost.lastTurn.toFixed(3)}</span>
       </span>

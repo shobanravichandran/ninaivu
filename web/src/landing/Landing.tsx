@@ -267,6 +267,73 @@ function Bars() {
   );
 }
 
+/* ---------- Architecture: how the parts fit together ---------- */
+function Architecture() {
+  return (
+    <section className="arch" id="architecture" aria-labelledby="arch-h">
+      <div className="arch-head" data-reveal>
+        <h2 id="arch-h">How it fits together</h2>
+        <p>
+          The agents never message each other. Every arrow between them runs through the graph, so take FalkorDB away
+          and nothing can answer.
+        </p>
+      </div>
+      <ol className="arch-flow" aria-label="Request path, left to right">
+        <li className="arch-col">
+          <div className="arch-box">
+            <b>Browser</b>
+            <span>React on Vercel</span>
+            <span>Chat, graph view, Cypher tab</span>
+          </div>
+        </li>
+        <li className="arch-arrow" aria-hidden="true">
+          <span>/api</span>
+        </li>
+        <li className="arch-col">
+          <div className="arch-box">
+            <b>FastAPI</b>
+            <span>Stateless, on Vercel</span>
+            <span>Reads who owns the issue, runs that one agent, follows handoffs</span>
+          </div>
+          <div className="arch-link" aria-hidden="true">embeddings</div>
+          <div className="arch-box side">
+            <b>Voyage AI</b>
+            <span>Turns words into vectors</span>
+          </div>
+        </li>
+        <li className="arch-arrow" aria-hidden="true">
+          <span>runs</span>
+        </li>
+        <li className="arch-col">
+          <div className="arch-agents">
+            <b>Agents</b>
+            <span className="owner">triage</span>
+            <span className="owner billing">billing</span>
+            <span className="owner">tech</span>
+            <span className="owner">memory curator</span>
+          </div>
+          <div className="arch-link" aria-hidden="true">thinks with</div>
+          <div className="arch-box side">
+            <b>Claude Opus 5.5</b>
+            <span>Tool runner, one call per step</span>
+          </div>
+        </li>
+        <li className="arch-arrow" aria-hidden="true">
+          <span>every tool is a Cypher query</span>
+        </li>
+        <li className="arch-col">
+          <div className="arch-box db">
+            <b>FalkorDB</b>
+            <span>One graph per company</span>
+            <span>Memory, ownership, handoffs, playbooks</span>
+            <span>AWS us-east-1, next to the API</span>
+          </div>
+        </li>
+      </ol>
+    </section>
+  );
+}
+
 /* ---------- Footer: live status tile ---------- */
 function GraphStatus() {
   const [status, setStatus] = useState("checking the graph…");
@@ -291,7 +358,7 @@ export default function Landing() {
         </a>
         <nav>
           <a href="#how">How it works</a>
-          <a href="#memory">Memory</a>
+          <a href="#architecture">Architecture</a>
           <a href="#numbers">Numbers</a>
           <a href={REPO}>Code</a>
           <a href="/app" className="nav-action">
@@ -397,6 +464,8 @@ export default function Landing() {
         </section>
 
         <MemoryPanel />
+
+        <Architecture />
 
         <Bars />
 

@@ -94,6 +94,7 @@ export default function App() {
 
   useEffect(() => {
     setSessionId(null);
+    setClockOffsetDays(0); // a new customer starts today
     setMessages([]);
     setMemory(null);
     setQueries([]);
@@ -155,6 +156,11 @@ export default function App() {
     }
   }
 
+  function resetClock() {
+    setClockOffsetDays(0);
+    setMessages((m) => [...m, { role: "system", text: "Back to today." }]);
+  }
+
   function advanceClock() {
     setClockOffsetDays((d) => d + 7);
     setMessages((m) => [...m, { role: "system", text: "A week passes…" }]);
@@ -171,6 +177,7 @@ export default function App() {
         onCustomer={setCustomerId}
         clockOffsetDays={clockOffsetDays}
         onAdvanceClock={advanceClock}
+        onResetClock={resetClock}
         canAdvance={sessionId === null && !busy}
         cost={cost}
       />
