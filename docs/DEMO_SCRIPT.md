@@ -1,7 +1,7 @@
 # Ninaivu demo video: script and shot list
 
 **Target length:** 2:45–3:00 · **Track:** 02, Agent Memory and Coordination
-**App:** <https://ninaivu-peach.vercel.app> · **Repo:** <https://github.com/shobanravichandran/ninaivu>
+**Landing page:** <https://ninaivu-ai.vercel.app> · **Demo console:** <https://ninaivu-ai.vercel.app/app> · **Repo:** <https://github.com/shobanravichandran/ninaivu>
 
 The story: one customer, two agents, one week apart, and the graph is the only thing connecting them.
 
@@ -15,7 +15,7 @@ The story: one customer, two agents, one week apart, and the graph is the only t
    ```bash
    python -m seed.generate_data --tenant all --reset
    ```
-3. **Browser:** a fresh window with only the app open, bookmarks bar hidden, zoom 90%, window 1920×1080, light theme.
+3. **Browser:** a fresh window with only the demo console (`/app`) open, bookmarks bar hidden, zoom 90%, window 1920×1080.
    Have a second tab ready on the GitHub repo (README architecture diagram) and on
    `server/scripts/load_test_results.md`.
 4. **Recorder:** OBS, Loom, or Windows Game Bar (Win + Alt + R). Do a 10-second mic check.

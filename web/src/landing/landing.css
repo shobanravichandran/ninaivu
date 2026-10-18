@@ -79,6 +79,11 @@ html.landing-page body {
   color: var(--accent);
 }
 
+.landing .nav-action {
+  color: var(--accent);
+  font-weight: 500;
+}
+
 .wordmark {
   font-size: var(--step-lead);
   font-weight: 600;
@@ -912,7 +917,7 @@ html.landing-page body {
 
 /* Phone composition */
 @media (max-width: 760px) {
-  .nav nav a:not(:last-child) {
+  .nav nav a:not(.nav-action) {
     display: none;
   }
 

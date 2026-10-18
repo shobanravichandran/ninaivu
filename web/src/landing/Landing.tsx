@@ -287,6 +287,9 @@ export default function Landing() {
           <a href="#memory">Memory</a>
           <a href="#numbers">Numbers</a>
           <a href={REPO}>Code</a>
+          <a href="/app" className="nav-action">
+            Open the demo
+          </a>
         </nav>
       </header>
 

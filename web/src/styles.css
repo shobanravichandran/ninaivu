@@ -100,6 +100,10 @@ body {
   .panel {
     min-height: 420px;
   }
+
+  .panel.chat {
+    min-height: 640px;
+  }
 }
 
 .panel {
@@ -390,4 +394,45 @@ code {
   padding: 6px 8px;
   border-radius: 8px;
   background: var(--accent-soft);
+}
+
+/* First-visit guidance */
+.guide {
+  padding: 4px 4px 0;
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.guide p {
+  margin: 0 0 6px;
+  color: var(--text);
+}
+
+.guide ol {
+  margin: 0;
+  padding-left: 20px !important;
+}
+
+.guide li + li {
+  margin-top: 4px;
+}
+
+.suggestions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.suggestions button {
+  text-align: left;
+  background: var(--accent-soft);
+  color: var(--text);
+  font-size: 13px;
+  line-height: 1.4;
+}
+
+.suggestions button::before {
+  content: "Try: ";
+  color: var(--accent);
 }

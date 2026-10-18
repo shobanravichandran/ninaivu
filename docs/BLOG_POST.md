@@ -118,7 +118,7 @@ What surprised us was how much of the real work was verification. Most of the bu
 
 ## Try it
 
-- **Live demo:** [ninaivu-peach.vercel.app](https://ninaivu-peach.vercel.app). Pick a customer, send a message, then open the Graph, Cypher queries and Agent trace tabs.
+- **Live demo:** [ninaivu-ai.vercel.app](https://ninaivu-ai.vercel.app). Pick a customer, send a message, then open the Graph, Cypher queries and Agent trace tabs.
 - **Code, queries and data model:** [github.com/shobanravichandran/ninaivu](https://github.com/shobanravichandran/ninaivu). Every Cypher query is in `server/queries/`.
 - **Stack:** FalkorDB Cloud (free tier, AWS us-east-1) · FastAPI on Vercel · React + Vite on Vercel · Claude Opus 5.5 through the Anthropic tool runner · Voyage AI `voyage-4-lite` embeddings.
 

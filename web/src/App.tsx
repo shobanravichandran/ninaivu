@@ -18,6 +18,25 @@ function withHandoffs(replies: AgentReply[]): ChatMessage[] {
   return out;
 }
 
+// Suggested customer messages, matched to the seeded story of each customer and to where the demo is.
+const STARTERS: Record<string, string[]> = {
+  "acme/c-001": ["Hi, my order A-1001 arrived today and the earbuds case is cracked."],
+  "acme/c-002": ["Quick update: I've moved to Bengaluru, and WhatsApp works better for me than phone calls now."],
+  "acme/c-003": ["The app is logging me out again on my iPhone."],
+  "zenfiber/c-001": ["My Wi-Fi is slow again in the evenings."],
+};
+const FOLLOW_UPS: Record<string, string[]> = {
+  "acme/c-001": ["There's a crack right across the lid of the case. A refund is fine. Please send updates on WhatsApp, not email."],
+  "zenfiber/c-001": ["That worked, speed is back to normal."],
+};
+
+function suggestionsFor(tenant: string, customerId: string, inSession: boolean, later: boolean): string[] {
+  const key = `${tenant}/${customerId}`;
+  if (inSession) return FOLLOW_UPS[key] ?? [];
+  if (later) return ["Hi again, any update?"];
+  return STARTERS[key] ?? ["Hi, I need help with my last order."];
+}
+
 export default function App() {
   const [tenants, setTenants] = useState<Tenant[]>([]);
   const params = new URLSearchParams(window.location.search);
@@ -106,7 +125,11 @@ export default function App() {
         clock_offset_days: clockOffsetDays,
       });
       const learned = res.facts_added.length ? ` Learned: ${res.facts_added.join("; ")}.` : "";
-      setMessages((m) => [...m, { role: "system", text: `Session saved. ${res.summary}${learned}` }]);
+      setMessages((m) => [
+        ...m,
+        { role: "system", text: `Session saved. ${res.summary}${learned}` },
+        { role: "system", text: "Next: press ⏩ +7 days, then ask for an update." },
+      ]);
       setQueries(res.queries);
       setTrace([]);
       addCost(res.usage.cost_usd);
@@ -149,6 +172,7 @@ export default function App() {
           busy={busy}
           canSend={Boolean(customerId)}
           sessionActive={sessionId !== null}
+          suggestions={suggestionsFor(tenant, customerId, sessionId !== null, clockOffsetDays > 0)}
           onSend={send}
           onEndSession={endSession}
         />

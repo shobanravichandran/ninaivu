@@ -20,7 +20,7 @@ export default function TopBar(props: Props) {
         <a href="/">Ninaivu</a> <span className="muted">live demo · one memory for every agent</span>
       </h1>
       <label>
-        Tenant
+        Company
         <select value={props.tenant} onChange={(e) => props.onTenant(e.target.value)}>
           {props.tenants.map((t) => (
             <option key={t.id} value={t.id}>
@@ -46,9 +46,10 @@ export default function TopBar(props: Props) {
       >
         ⏩ +7 days
       </button>
+      {!props.canAdvance && <span className="muted small">end the session to jump ahead</span>}
       {props.clockOffsetDays > 0 && <span className="muted small">clock +{props.clockOffsetDays}d</span>}
-      <span className="cost" title="Claude API cost in this browser session">
-        ${props.cost.total.toFixed(3)} <span className="muted small">last ${props.cost.lastTurn.toFixed(3)}</span>
+      <span className="cost" title="What the Claude calls in this browser session cost">
+        Model cost ${props.cost.total.toFixed(3)} <span className="muted small">· last turn ${props.cost.lastTurn.toFixed(3)}</span>
       </span>
     </header>
   );

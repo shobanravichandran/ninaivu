@@ -3,7 +3,7 @@
 **Graph memory for support agent swarms, built on FalkorDB.**
 Graph Hacks: Context for AI Agents (WeMakeDevs × FalkorDB) · **Track 02: Agent Memory and Coordination**
 
-**Live demo: <https://ninaivu-peach.vercel.app>** · API health: <https://ninaivu-api.vercel.app/api/health>
+**Live demo: <https://ninaivu-ai.vercel.app>** · API health: <https://ninaivu-api.vercel.app/api/health>
 
 *Ninaivu* (நினைவு) is Tamil for "memory".
 
@@ -253,7 +253,7 @@ npm run dev                                           # http://localhost:5173, p
 | Project | Root | Domain | Settings |
 |---|---|---|---|
 | `ninaivu-api` | `server` | ninaivu-api.vercel.app | FastAPI preset. Env: `FALKORDB_HOST/PORT/USERNAME/PASSWORD/SSL`, `ANTHROPIC_API_KEY`, `NINAIVU_MODEL`, `VOYAGE_API_KEY`, `VOYAGE_MODEL`, `EMBED_DIM` (leave `USAGE_LEDGER` unset) |
-| `ninaivu` (web) | `web` | ninaivu-peach.vercel.app | Vite preset, no env vars. `web/vercel.json` rewrites `/api/*` to the API project, so the browser sees one origin |
+| `ninaivu` (web) | `web` | ninaivu-ai.vercel.app | Vite preset, no env vars. `web/vercel.json` rewrites `/api/*` to the API project, so the browser sees one origin |
 
 The FalkorDB Cloud free tier stops after a day without use and keeps no data across restarts. If the demo looks empty,
 re-seed with `python -m seed.generate_data --tenant all --reset`.
