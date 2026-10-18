@@ -85,6 +85,7 @@ function suggestionsFor(
   hasOpenIssue: boolean,
   sent: string[],
 ): string[] {
+  if (!customerId) return []; // still loading the customer list
   const key = `${tenant}/${customerId}`;
   // A follow-up only helps while the issue is still open; once the agent has handled it, it's noise.
   const pool = inSession
