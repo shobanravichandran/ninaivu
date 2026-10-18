@@ -49,7 +49,7 @@ flowchart LR
     CU["Memory Curator"]
   end
   A -- "named Cypher queries" --> F[("FalkorDB Cloud<br/>one graph per tenant<br/>AWS us-east-1")]
-  T & BI & TE & CU -- "Claude Opus 5.5<br/>tool runner" --> C(("Claude API"))
+  T & BI & TE & CU -- "Claude Haiku 5.5<br/>tool runner" --> C(("Claude API"))
   A -- "embeddings" --> V(("Voyage AI"))
 ```
 
@@ -195,9 +195,9 @@ LIMIT 5
 | Tech | Troubleshooting with playbooks | `search_memory`, `find_playbook`, `record_playbook_outcome`, `open_issue`, `resolve_issue`, `handoff_to`, `remember_fact` | medium |
 | Memory Curator | At session end: summary, sentiment, lasting facts (supersedes old versions) | structured output | low |
 
-All agents run on Claude Opus 5.5 (`claude-opus-5-5`) through the Anthropic SDK's tool runner, with server-side refusal
-fallback enabled. Tools are Python closures bound to `(tenant, customer, session, agent)`, so the model never passes ids.
-Handoffs inside one request are followed up to two hops. Each customer turn costs about $0.05; the UI shows the cost of
+All agents run on Claude Haiku 5.5 (`claude-haiku-5-5`, set by `NINAIVU_MODEL`) through the Anthropic SDK's tool runner;
+switching to Sonnet 5.5 or Opus 5.5 is one env var, and those also get the server-side refusal fallback. Tools are Python closures bound to `(tenant, customer, session, agent)`, so the model never passes ids.
+Handoffs inside one request are followed up to two hops. Each customer turn costs about $0.001 on Haiku 5.5 (about $0.05 on Opus 5.5); the UI shows the cost of
 every turn. A daily cap (`DEMO_DAILY_TURNS`, default 150) counted atomically in FalkorDB keeps the public demo's
 bill bounded; past it, chat answers with a friendly 429 until midnight UTC.
 
@@ -275,6 +275,6 @@ Opus 5.5), as the hackathon rules allow.
   Vercel, and reviewed and tested the results at each step.
 - **Claude Code** drafted the plan and wrote most of the code, Cypher queries, tests and documentation under that
   direction, and ran the tests, seeding, load test and deployment checks.
-- **At runtime**, the product itself uses Claude Opus 5.5 for the agents and the curator, and Voyage AI for embeddings.
+- **At runtime**, the product itself uses Claude Haiku 5.5 for the agents and the curator, and Voyage AI for embeddings.
 
 Every query and design decision is documented above and in [PLAN.md](PLAN.md), and the team can walk through any of it.

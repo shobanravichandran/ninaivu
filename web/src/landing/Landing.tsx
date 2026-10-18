@@ -236,7 +236,7 @@ function Bars() {
         <h2 id="bars-h">Every memory query, under a millisecond</h2>
         <p className="bars-sub">
           Median FalkorDB time per query with 50 customers at once (1,912 queries). A full agent turn spends about 42 ms
-          in the graph and around 15 seconds thinking in the model, so memory is never the wait.
+          in the graph and a few seconds thinking in the model, so memory is never the wait.
         </p>
       </div>
       <div className="hbars" data-ui role="table" aria-label="Median FalkorDB time per query, in milliseconds">
@@ -314,7 +314,7 @@ function Architecture() {
           </div>
           <div className="arch-link" aria-hidden="true">thinks with</div>
           <div className="arch-box side">
-            <b>Claude Opus 5.5</b>
+            <b>Claude Haiku 5.5</b>
             <span>Tool runner, one call per step</span>
           </div>
         </li>
@@ -487,7 +487,7 @@ export default function Landing() {
               and watch her agents <button type="submit">remember</button>
             </p>
           </form>
-          <p className="close-note">Each message costs about five cents of model time. The graph work takes milliseconds.</p>
+          <p className="close-note">Each message costs about a tenth of a cent of model time. The graph work takes milliseconds.</p>
         </section>
       </main>
 

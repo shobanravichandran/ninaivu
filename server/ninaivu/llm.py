@@ -17,7 +17,12 @@ REFUSAL_REPLY = "Sorry, I can't help with that here. Is there anything else abou
 PRICES = {
     "claude-opus-5-5": {"input": 4.00, "output": 20.00, "cache_read": 0.20, "cache_write": 5.00},
     "claude-sonnet-5-5": {"input": 2.00, "output": 10.00, "cache_read": 0.20, "cache_write": 2.50},
+    # Haiku 5.5: prompts up to 100K tokens (ours are ~3K); cache reads 0.1x, 5-minute writes 1.25x.
+    "claude-haiku-5-5": {"input": 0.10, "output": 0.50, "cache_read": 0.01, "cache_write": 0.125},
 }
+
+# Models that accept the server-side refusal fallback (Haiku 5.5 has none).
+FALLBACK_MODELS = {"claude-opus-5-5", "claude-sonnet-5-5"}
 
 # Per-request log of model calls, returned by the API and printed by the CLI demo.
 usage_log: ContextVar[list[dict] | None] = ContextVar("usage_log", default=None)
@@ -30,12 +35,10 @@ def client() -> anthropic.Anthropic:
 
 def request_kwargs(effort: str) -> dict:
     """Model, effort and refusal fallback shared by every agent call."""
-    return {
-        "model": settings.model,
-        "output_config": {"effort": effort},
-        "betas": [FALLBACK_BETA],
-        "fallbacks": "default",
-    }
+    kwargs = {"model": settings.model, "output_config": {"effort": effort}}
+    if settings.model in FALLBACK_MODELS:
+        kwargs.update(betas=[FALLBACK_BETA], fallbacks="default")
+    return kwargs
 
 
 def text_of(message) -> str:

@@ -5,7 +5,7 @@ Usage (from server/, after seeding):  python -m scripts.demo_cli --tenant acme -
 Session 1: damaged order -> Triage -> handoff to Billing -> refund; customer states a contact preference.
 Curator runs. Clock jumps +7 days.
 Session 2: "any update?" -> answered from memory without re-asking.
-Needs FalkorDB, ANTHROPIC_API_KEY and VOYAGE_API_KEY (or EMBEDDINGS_FAKE=1). Costs about $1 per run.
+Needs FalkorDB, ANTHROPIC_API_KEY and VOYAGE_API_KEY (or EMBEDDINGS_FAKE=1). Costs under one cent per run on Haiku 5.5.
 """
 import argparse
 

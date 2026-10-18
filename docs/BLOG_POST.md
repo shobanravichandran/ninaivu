@@ -93,7 +93,7 @@ The first end-to-end run worked, which mostly meant the bugs got more interestin
 
 ## The numbers
 
-FalkorDB answers our memory queries in well under a millisecond, and a full agent turn costs about five cents.
+FalkorDB answers our memory queries in well under a millisecond, and a full agent turn costs about a tenth of a cent.
 
 | What | Result |
 | --- | --- |
@@ -102,7 +102,7 @@ FalkorDB answers our memory queries in well under a millisecond, and a full agen
 | Race: 10 agents claim one issue at the same moment | exactly 1 winner |
 | Isolation: same customer id in two tenant graphs | no shared memory |
 | One production agent turn | 32 queries, 42 ms in FalkorDB |
-| Claude cost per customer turn | about $0.05 |
+| Claude cost per customer turn | about $0.001 (Haiku 5.5) |
 
 The load test makes no model calls: it runs the same named queries the agents use, from 50 simulated customers at once. There are also 24 automated tests, 7 of which run every query against a live FalkorDB instance. Every Claude call logs its token cost, and the app shows the cost of each turn in its top bar.
 
@@ -120,7 +120,7 @@ What surprised us was how much of the real work was verification. Most of the bu
 
 - **Live demo:** [ninaivu-ai.vercel.app](https://ninaivu-ai.vercel.app). Pick a customer, send a message, then open the Graph, Cypher queries and Agent trace tabs.
 - **Code, queries and data model:** [github.com/shobanravichandran/ninaivu](https://github.com/shobanravichandran/ninaivu). Every Cypher query is in `server/queries/`.
-- **Stack:** FalkorDB Cloud (free tier, AWS us-east-1) · FastAPI on Vercel · React + Vite on Vercel · Claude Opus 5.5 through the Anthropic tool runner · Voyage AI `voyage-4-lite` embeddings.
+- **Stack:** FalkorDB Cloud (free tier, AWS us-east-1) · FastAPI on Vercel · React + Vite on Vercel · Claude Haiku 5.5 through the Anthropic tool runner · Voyage AI `voyage-4-lite` embeddings.
 
 The demo runs on FalkorDB's free tier, which pauses after a day without traffic and keeps no data across restarts. If the graph looks empty, the seed script in the repo restores the demo data in about 30 seconds.
 

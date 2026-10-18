@@ -30,7 +30,7 @@ class Settings:
     falkordb_password: str | None = os.getenv("FALKORDB_PASSWORD") or None
     falkordb_ssl: bool = _bool("FALKORDB_SSL")
 
-    model: str = os.getenv("NINAIVU_MODEL", "claude-opus-5-5")
+    model: str = os.getenv("NINAIVU_MODEL", "claude-haiku-5-5")
     embed_model: str = os.getenv("VOYAGE_MODEL", "voyage-4-lite")
     embed_dim: int = int(os.getenv("EMBED_DIM", "1024"))
     fake_embeddings: bool = _bool("EMBEDDINGS_FAKE")
