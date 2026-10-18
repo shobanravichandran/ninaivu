@@ -30,11 +30,24 @@ const FOLLOW_UPS: Record<string, string[]> = {
   "zenfiber/c-001": ["That worked, speed is back to normal."],
 };
 
-function suggestionsFor(tenant: string, customerId: string, inSession: boolean, later: boolean): string[] {
+function suggestionsFor(
+  tenant: string,
+  customerId: string,
+  inSession: boolean,
+  later: boolean,
+  hasOpenIssue: boolean,
+  sent: string[],
+): string[] {
   const key = `${tenant}/${customerId}`;
-  if (inSession) return FOLLOW_UPS[key] ?? [];
-  if (later) return ["Hi again, any update?"];
-  return STARTERS[key] ?? ["Hi, I need help with my last order."];
+  // A follow-up only helps while the issue is still open; once the agent has handled it, it's noise.
+  const pool = inSession
+    ? hasOpenIssue
+      ? (FOLLOW_UPS[key] ?? [])
+      : []
+    : later
+      ? ["Hi again, any update?"]
+      : (STARTERS[key] ?? ["Hi, I need help with my last order."]);
+  return pool.filter((s) => !sent.includes(s));
 }
 
 export default function App() {
@@ -172,7 +185,14 @@ export default function App() {
           busy={busy}
           canSend={Boolean(customerId)}
           sessionActive={sessionId !== null}
-          suggestions={suggestionsFor(tenant, customerId, sessionId !== null, clockOffsetDays > 0)}
+          suggestions={suggestionsFor(
+            tenant,
+            customerId,
+            sessionId !== null,
+            clockOffsetDays > 0,
+            (memory?.open_issues.length ?? 0) > 0,
+            messages.filter((m) => m.role === "customer").map((m) => m.text),
+          )}
           onSend={send}
           onEndSession={endSession}
         />
