@@ -213,48 +213,55 @@ function MemoryPanel() {
 
 /* ---------- Stats: FalkorDB time per named query under load ---------- */
 const BARS = [
-  { q: "customer_profile", ms: 0.09 },
-  { q: "message_link", ms: 0.1 },
-  { q: "fact_close_current", ms: 0.11 },
-  { q: "issue_claim", ms: 0.13 },
-  { q: "context_facts", ms: 0.15 },
-  { q: "context_open_issues", ms: 0.18 },
-  { q: "session_start", ms: 0.18 },
-  { q: "context_recent_sessions", ms: 0.2 },
-  { q: "session_end", ms: 0.21 },
-  { q: "semantic_recall", ms: 0.26 },
-  { q: "message_append", ms: 0.37 },
-  { q: "fact_create", ms: 0.5 },
+  { q: "fact_create", what: "store a new fact", ms: 0.5 },
+  { q: "message_append", what: "save a message", ms: 0.37 },
+  { q: "semantic_recall", what: "vector search + graph filter", ms: 0.26 },
+  { q: "session_end", what: "close a session", ms: 0.21 },
+  { q: "context_recent_sessions", what: "last 3 summaries", ms: 0.2 },
+  { q: "context_open_issues", what: "open issues + owner", ms: 0.18 },
+  { q: "session_start", what: "open a session", ms: 0.18 },
+  { q: "context_facts", what: "current facts", ms: 0.15 },
+  { q: "issue_claim", what: "race-safe claim", ms: 0.13 },
+  { q: "fact_close_current", what: "retire an old fact", ms: 0.11 },
+  { q: "message_link", what: "chain the history", ms: 0.1 },
+  { q: "customer_profile", what: "who is this", ms: 0.09 },
 ];
-const MAX = Math.max(...BARS.map((b) => b.ms));
-const LABELLED = new Set(["customer_profile", "semantic_recall", "fact_create"]);
+const SCALE_MS = 1; // the track is one millisecond long
 
 function Bars() {
   return (
     <section className="bars" id="numbers" aria-labelledby="bars-h">
       <div className="bars-head">
         <p className="bars-figure">0.18 ms</p>
-        <h2 id="bars-h">to answer, with 50 customers at once</h2>
+        <h2 id="bars-h">Every memory query, under a millisecond</h2>
         <p className="bars-sub">
-          Median FalkorDB time per memory query in our load test: 1,912 queries, ten agents racing for one issue and
-          exactly one winning.
+          Median FalkorDB time per query with 50 customers at once (1,912 queries). A full agent turn spends about 42 ms
+          in the graph and around 15 seconds thinking in the model, so memory is never the wait.
         </p>
       </div>
-      <div className="bars-chart" data-ui role="list" aria-label="FalkorDB median time per query, in milliseconds">
-        {BARS.map((b, i) => (
-          <div
-            key={b.q}
-            role="listitem"
-            tabIndex={0}
-            className={`bar ${b.q === "semantic_recall" ? "accent" : ""} ${i >= BARS.length - 3 ? "end" : ""}`}
-            style={{ height: `${(b.ms / MAX) * 100}%`, ["--w" as string]: `${Math.max((b.ms / MAX) * 100, 18)}%` }}
-            aria-label={`${b.q}: ${b.ms} ms`}
-          >
-            <span className={`bar-tip ${LABELLED.has(b.q) ? "always" : ""}`}>
-              <span className="bar-q">{b.q}</span> {b.ms} ms
+      <div className="hbars" data-ui role="table" aria-label="Median FalkorDB time per query, in milliseconds">
+        <div className="hbar-scale" aria-hidden="true">
+          <span className="hbar-axis">
+            <span>0</span>
+            <span>1 ms</span>
+          </span>
+        </div>
+        {BARS.map((b) => (
+          <div key={b.q} role="row" className={`hbar ${b.q === "semantic_recall" ? "accent" : ""}`}>
+            <span role="rowheader" className="hbar-name">
+              {b.what} <code>{b.q}</code>
+            </span>
+            <span role="cell" className="hbar-track">
+              <span className="hbar-fill" style={{ width: `${(b.ms / SCALE_MS) * 100}%` }} />
+            </span>
+            <span role="cell" className="hbar-value">
+              {b.ms.toFixed(2)} ms
             </span>
           </div>
         ))}
+        <p className="hbar-race">
+          Race test: 10 agents claimed the same issue at the same moment. Exactly one won.
+        </p>
       </div>
     </section>
   );

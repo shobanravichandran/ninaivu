@@ -593,21 +593,15 @@ html.landing-page body {
   text-decoration: line-through;
 }
 
-/* Stats: bars standing on the bottom edge */
+/* Stats: labelled horizontal bars against a 1 ms track */
 .bars {
-  position: relative;
   margin-top: var(--gap-section);
-  height: 90svh;
-  min-height: 560px;
+  padding: clamp(64px, 8vw, 120px) var(--m);
   background: var(--surface);
-}
-
-.bars-head {
-  position: absolute;
-  top: clamp(48px, 8vh, 96px);
-  left: var(--m);
-  max-width: 34rem;
-  z-index: 1;
+  display: grid;
+  grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+  gap: 48px clamp(40px, 6vw, 96px);
+  align-items: start;
 }
 
 .bars-figure {
@@ -619,7 +613,7 @@ html.landing-page body {
 }
 
 .bars h2 {
-  margin-top: 12px;
+  margin-top: 16px;
   font-size: var(--step-lead);
   letter-spacing: -0.01em;
   line-height: 1.2;
@@ -631,74 +625,96 @@ html.landing-page body {
   max-width: 44ch;
 }
 
-.bars-chart {
-  position: absolute;
-  inset: auto 0 0 0;
-  height: 52vh;
+.hbars {
+  font-size: 15px;
+}
+
+.hbar,
+.hbar-scale {
   display: grid;
-  grid-template-columns: repeat(12, 1fr);
-  gap: 8px;
-  align-items: end;
+  grid-template-columns: minmax(0, 15rem) minmax(0, 1fr) 4.5rem;
+  gap: 16px;
+  align-items: center;
 }
 
-.bar {
-  position: relative;
-  background: var(--surface-2);
-  transform-origin: bottom;
-  transition: background-color 0.2s var(--ease);
+.hbar + .hbar {
+  margin-top: 10px;
 }
 
-.bar.accent {
-  background: var(--accent);
+.hbar-scale {
+  margin-bottom: 12px;
+  color: var(--muted);
+  font-size: 13px;
 }
 
-.bar:hover,
-.bar:focus-visible {
-  background: #3a3a3a;
+.hbar-axis {
+  grid-column: 2;
+  display: flex;
+  justify-content: space-between;
 }
 
-.bar.accent:hover,
-.bar.accent:focus-visible {
-  background: var(--ink);
-}
-
-.bar-tip {
-  position: absolute;
-  left: 0;
-  bottom: calc(100% + 8px);
-  white-space: nowrap;
-  font-size: var(--step-small);
-  font-variant-numeric: tabular-nums;
-  opacity: 0;
-  transition: opacity 0.2s var(--ease);
-}
-
-.bar-tip.always {
-  font-size: var(--step-lead);
-  font-weight: 500;
-  opacity: 1;
-}
-
-.bar-q {
+.hbar-name code {
   display: block;
-  font-size: var(--step-small);
-  font-weight: 400;
+  font-size: 12px;
   color: var(--muted);
 }
 
-.bar.end .bar-tip {
-  left: auto;
+.hbar-track {
+  position: relative;
+  height: 14px;
+  background: var(--bg);
+}
+
+.hbar-track::after {
+  /* the 1 ms line every bar is measured against */
+  content: "";
+  position: absolute;
   right: 0;
+  top: -6px;
+  bottom: -6px;
+  width: 2px;
+  background: var(--muted);
+}
+
+.hbar-fill {
+  display: block;
+  height: 100%;
+  background: #4a4a4a;
+  transform-origin: left;
+}
+
+.hbar.accent .hbar-fill {
+  background: var(--accent);
+}
+
+.hbar-value {
   text-align: right;
+  font-variant-numeric: tabular-nums;
 }
 
-.bars-chart .bar:first-child .bar-tip {
-  left: var(--m);
+.hbar.accent .hbar-value,
+.hbar.accent .hbar-name {
+  color: var(--ink);
+  font-weight: 500;
 }
 
-.bar:hover .bar-tip,
-.bar:focus-visible .bar-tip {
-  opacity: 1;
+.hbar-race {
+  margin-top: 28px;
+  font-size: var(--step-body);
+}
+
+.js .landing .hbar-fill {
+  animation: grow-x 0.9s var(--ease) both;
+}
+
+.hbar:nth-child(odd) .hbar-fill {
+  animation-delay: 0.06s;
+}
+
+@keyframes grow-x {
+  from {
+    transform: scaleX(0);
+  }
 }
 
 /* Closing sentence with a blank */
@@ -865,24 +881,6 @@ html.landing-page body {
   transform: none;
 }
 
-.js .landing .bars-chart .bar {
-  animation: grow 1s var(--ease) both;
-}
-
-.bars-chart .bar:nth-child(odd) {
-  animation-delay: 0.05s;
-}
-
-.bars-chart .bar:nth-child(3n) {
-  animation-delay: 0.12s;
-}
-
-@keyframes grow {
-  from {
-    transform: scaleY(0.05);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
   .landing *,
   .js .landing [data-reveal] > *,
@@ -980,38 +978,25 @@ html.landing-page body {
   }
 
   .bars {
-    height: auto;
-    padding: 48px var(--m);
-  }
-
-  .bars-head,
-  .bars-chart {
-    position: static;
-  }
-
-  .bars-chart {
-    height: auto;
-    margin-top: 40px;
     grid-template-columns: 1fr;
-    gap: 6px;
   }
 
-  .bar {
-    height: 28px !important;
-    width: var(--w);
+  .hbar,
+  .hbar-scale {
+    grid-template-columns: minmax(0, 1fr) 4rem;
+    gap: 6px 12px;
   }
 
-  .bar-tip,
-  .bar-tip.always {
-    position: static;
-    opacity: 1;
-    font-size: 13px;
-    padding-left: 8px;
-    line-height: 28px;
+  .hbar-name {
+    grid-column: 1 / -1;
   }
 
-  .bar-q {
-    display: inline;
+  .hbar-axis {
+    grid-column: 1;
+  }
+
+  .hbar + .hbar {
+    margin-top: 14px;
   }
 
   .tiles {
