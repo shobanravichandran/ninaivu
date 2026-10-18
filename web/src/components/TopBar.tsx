@@ -35,7 +35,7 @@ export default function TopBar(props: Props) {
         <select value={props.customerId} onChange={(e) => props.onCustomer(e.target.value)}>
           {props.customers.map((c) => (
             <option key={c.id} value={c.id}>
-              {c.name} ({c.id})
+              {c.name} ({c.id}){c.sessions > 0 ? ` · ${c.sessions} past ${c.sessions === 1 ? "chat" : "chats"}` : ""}
             </option>
           ))}
         </select>

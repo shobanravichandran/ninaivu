@@ -3,7 +3,8 @@
 Usage (from server/):  python -m seed.generate_data --tenant all --reset [--fake-embeddings]
 
 Per tenant: indexes, 4 Agent nodes, 30 customers, ~80 orders, 20 products, 15 playbooks
-(embedded), and pre-existing history for a few customers so memory is visible from the first click.
+(embedded), and past sessions for about ten customers (seed/history.py) so memory is visible from the first
+click, including open issues, a customer who moved, and a playbook that failed before another worked.
 Past sessions are written through the same memory/coordination functions the agents use.
 Customer ids overlap across tenants on purpose (c-001 exists in both) for the isolation demo.
 """
@@ -22,6 +23,7 @@ from ninaivu.db import graph_for
 from ninaivu.embeddings import embed, use_fake_embeddings
 from ninaivu.ids import new_id
 from ninaivu.schema import ensure_schema
+from seed.history import HISTORY
 
 RANDOM_SEED = 42
 CUSTOMERS_PER_TENANT = 30
@@ -141,63 +143,36 @@ def _past_session(tenant: str, cid: str, at: int, transcript: list[tuple[str, st
         if issue.get("handoff_to"):
             coordination.handoff(tenant, cid, iid, "triage", issue["handoff_to"], issue["handoff_reason"],
                                  issue["handoff_context"], at + 120)
+        if issue.get("failed_playbook_id"):
+            memory.record_playbook_outcome(tenant, cid, iid, issue["failed_playbook_id"], False, at + 180)
         if issue.get("playbook_id"):
             memory.record_playbook_outcome(tenant, cid, iid, issue["playbook_id"], True, at + 240)
-        memory.resolve_issue(tenant, cid, iid, issue["resolution"], at + 300)
+        if issue.get("resolution"):  # no resolution: the issue stays open with its current owner
+            memory.resolve_issue(tenant, cid, iid, issue["resolution"], at + 300)
     for key, text in facts:
         memory.remember_fact(tenant, cid, sid, key, text, at + 360)
     memory.end_session(tenant, cid, sid, summary, sentiment, at + 400)
 
 
-def _history(tenant: str, now: int, first_order: dict[str, str]) -> None:
-    if tenant == "acme":
-        order = first_order["c-002"]
-        _past_session(
-            tenant, "c-002", now - 25 * DAY,
-            [("customer", None, f"My order {order} still hasn't arrived, it's been a week."),
-             ("agent", "triage", "Sorry about that. I'm passing this to Billing to trace the courier."),
-             ("agent", "billing", "The parcel was stuck at the hub. I've re-dispatched it; you'll have it tomorrow."),
-             ("customer", None, "Okay. Please call me rather than email, I don't check mail much.")],
-            summary=f"Arjun reported order {order} delayed by a week. Billing re-dispatched it from the hub; it arrived the next day.",
-            sentiment="neutral",
-            issue={"title": f"Delayed delivery for {order}", "category": "billing", "order_id": order,
-                   "handoff_to": "billing", "handoff_reason": "Courier trace needed",
-                   "handoff_context": f"Order {order} stuck in transit for a week.",
-                   "playbook_id": "pb-acme-late-delivery-redispatch",
-                   "resolution": "Re-dispatched from the hub; delivered next day."},
-            facts=(("contact_preference", "Prefers phone calls over email"), ("city", "Lives in Coimbatore")),
-        )
-        _past_session(
-            tenant, "c-003", now - 12 * DAY,
-            [("customer", None, "The app keeps logging me out in a loop on my iPhone."),
-             ("agent", "triage", "Let me get Tech to help with that."),
-             ("agent", "tech", "Please log out everywhere, clear the app cache and reset your password, then log in again."),
-             ("customer", None, "That worked, thanks!")],
-            summary="Divya hit an app login loop on iPhone. Tech's session-clear and password reset playbook fixed it.",
-            sentiment="positive",
-            issue={"title": "App login loop on iPhone", "category": "tech",
-                   "handoff_to": "tech", "handoff_reason": "App troubleshooting",
-                   "handoff_context": "Login loop on iPhone app.",
-                   "playbook_id": "pb-acme-app-login-reset",
-                   "resolution": "Cleared sessions and reset password."},
-            facts=(("device", "Uses an iPhone"), ("language", "Prefers English")),
-        )
-    else:
-        _past_session(
-            tenant, "c-001", now - 20 * DAY,
-            [("customer", None, "My Wi-Fi is really slow in the evenings."),
-             ("agent", "triage", "Handing you to Tech for troubleshooting."),
-             ("agent", "tech", "Please restart the router, switch to 5 GHz and change the channel. Then run a speed test."),
-             ("customer", None, "Speed is back to 290 Mbps. Great.")],
-            summary="Karthik had slow evening Wi-Fi on the 300 Mbps plan. Router restart plus a 5 GHz channel change fixed it.",
-            sentiment="positive",
-            issue={"title": "Slow Wi-Fi in the evenings", "category": "tech",
-                   "handoff_to": "tech", "handoff_reason": "Wi-Fi troubleshooting",
-                   "handoff_context": "Evening slowdown on Fiber 300.",
-                   "playbook_id": "pb-zen-slow-wifi-channel",
-                   "resolution": "Channel change on 5 GHz."},
-            facts=(("city", "Lives in Madurai"), ("plan", "On the Fiber 300 Mbps plan")),
-        )
+def _fill(value, names: dict):
+    if isinstance(value, str):
+        return value.format(**names)
+    if isinstance(value, dict):
+        return {k: _fill(v, names) for k, v in value.items()}
+    if isinstance(value, (list, tuple)):
+        return type(value)(_fill(v, names) for v in value)
+    return value
+
+
+def _history(tenant: str, now: int, customers: list[dict], first_order: dict[str, str]) -> int:
+    """Write the scripted past sessions (seed/history.py), oldest first. Returns how many."""
+    names = {c["id"]: c["name"].split()[0] for c in customers}
+    entries = sorted(HISTORY[tenant], key=lambda e: -e[1])
+    for cid, days_ago, transcript, summary, sentiment, issue, facts in entries:
+        fill = {"first": names[cid], "order": first_order.get(cid, "")}
+        _past_session(tenant, cid, now - days_ago * DAY, _fill(transcript, fill), _fill(summary, fill), sentiment,
+                      _fill(issue, fill), facts)
+    return len(entries)
 
 
 def seed_tenant(tenant: str, reset: bool) -> None:
@@ -228,8 +203,8 @@ def seed_tenant(tenant: str, reset: bool) -> None:
     first_order: dict[str, str] = {}
     for order in orders:
         first_order.setdefault(order["cid"], order["id"])
-    _history(tenant, now, first_order)
-    print(f"{tenant}: {len(customers)} customers, {len(orders)} orders, playbooks and history seeded")
+    sessions = _history(tenant, now, customers, first_order)
+    print(f"{tenant}: {len(customers)} customers, {len(orders)} orders, playbooks, {sessions} past sessions")
 
 
 def main() -> None:

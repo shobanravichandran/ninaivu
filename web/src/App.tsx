@@ -41,6 +41,10 @@ const STARTERS: Record<string, string[]> = {
     "I'm moving to Chennai next month. Can you shift my connection?",
     "I'd like to upgrade to the 1 Gbps plan in the middle of my billing cycle.",
   ],
+  "acme/c-005": ["Any news on the replacement base for my kettle?", "Can I just get a new kettle instead?"],
+  "acme/c-006": ["Where will my next order be delivered?", "I have store credit from before. Can I use it on my next order?"],
+  "acme/c-007": ["Any update on my refund?", "It's been another week and still no refund."],
+  "zenfiber/c-004": ["Is the technician still coming on Monday?", "The router dropped three times today."],
   "zenfiber/c-002": [
     "There's a red LOS light on my router and no internet.",
     "The Wi-Fi doesn't reach my bedroom at all.",

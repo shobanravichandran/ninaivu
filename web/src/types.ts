@@ -9,6 +9,7 @@ export interface Customer {
   id: string;
   name: string;
   tier: string;
+  sessions: number;
 }
 
 export interface QueryRun {
