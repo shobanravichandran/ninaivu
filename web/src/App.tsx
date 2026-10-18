@@ -19,16 +19,63 @@ function withHandoffs(replies: AgentReply[]): ChatMessage[] {
 }
 
 // Suggested customer messages, matched to the seeded story of each customer and to where the demo is.
+// Each list starts with the scripted demo line; the rest match a seeded playbook or a remembered fact.
 const STARTERS: Record<string, string[]> = {
-  "acme/c-001": ["Hi, my order A-1001 arrived today and the earbuds case is cracked."],
-  "acme/c-002": ["Quick update: I've moved to Bengaluru, and WhatsApp works better for me than phone calls now."],
-  "acme/c-003": ["The app is logging me out again on my iPhone."],
-  "zenfiber/c-001": ["My Wi-Fi is slow again in the evenings."],
+  "acme/c-001": [
+    "Hi, my order A-1001 arrived today and the earbuds case is cracked.",
+    "Only one of my new earbuds is playing sound.",
+    "My earbuds won't pair with my phone.",
+  ],
+  "acme/c-002": [
+    "Quick update: I've moved to Bengaluru, and WhatsApp works better for me than phone calls now.",
+    "My last order is late again, just like last time.",
+    "I think I was charged twice for my last order.",
+  ],
+  "acme/c-003": [
+    "The app is logging me out again on my iPhone.",
+    "My refund still hasn't shown up in my account.",
+    "My payment failed at checkout twice. What should I do?",
+  ],
+  "zenfiber/c-001": [
+    "My Wi-Fi is slow again in the evenings.",
+    "I'm moving to Chennai next month. Can you shift my connection?",
+    "I'd like to upgrade to the 1 Gbps plan in the middle of my billing cycle.",
+  ],
+  "zenfiber/c-002": [
+    "There's a red LOS light on my router and no internet.",
+    "The Wi-Fi doesn't reach my bedroom at all.",
+    "I was charged a late fee this month. It's the first time, can you waive it?",
+  ],
+};
+// For the other (generated) customers: common problems that each match a seeded playbook.
+const GENERIC_STARTERS: Record<string, string[]> = {
+  acme: [
+    "Hi, I need help with my last order.",
+    "My package arrived with one item missing.",
+    "I got the wrong size in my last order. Can I exchange it?",
+    "My coupon wasn't applied at checkout.",
+  ],
+  zenfiber: [
+    "My internet has been down for over a day.",
+    "The Wi-Fi shows connected but nothing loads.",
+    "My autopay failed this month.",
+    "The IPTV keeps buffering in the evenings.",
+  ],
 };
 const FOLLOW_UPS: Record<string, string[]> = {
-  "acme/c-001": ["There's a crack right across the lid of the case. A refund is fine. Please send updates on WhatsApp, not email."],
-  "zenfiber/c-001": ["That worked, speed is back to normal."],
+  "acme/c-001": [
+    "There's a crack right across the lid of the case. A refund is fine. Please send updates on WhatsApp, not email.",
+    "Could you send a replacement instead of a refund?",
+  ],
+  "acme/c-002": ["It's the order I placed last week. Please message me on WhatsApp about it."],
+  "acme/c-003": ["I already cleared the cache and reset my password. It still happens."],
+  "zenfiber/c-001": ["That worked, speed is back to normal.", "I restarted the router and it's still slow."],
+  "zenfiber/c-002": ["I checked the cable, it's plugged in properly. Still red.", "Can you send a technician?"],
 };
+// Mid-session with nothing open: show that the agents remember, or wrap up.
+const CHECK_INS = ["Do you remember how I like to be contacted?", "Thanks, that's all for today."];
+// Coming back after a fast-forward: the open issue should still be there, owned by the same agent.
+const LATER = ["Hi again, any update?", "Is my issue sorted yet?", "Just checking in on my ticket."];
 
 function suggestionsFor(
   tenant: string,
@@ -43,11 +90,11 @@ function suggestionsFor(
   const pool = inSession
     ? hasOpenIssue
       ? (FOLLOW_UPS[key] ?? [])
-      : []
+      : CHECK_INS
     : later
-      ? ["Hi again, any update?"]
-      : (STARTERS[key] ?? ["Hi, I need help with my last order."]);
-  return pool.filter((s) => !sent.includes(s));
+      ? LATER
+      : (STARTERS[key] ?? GENERIC_STARTERS[tenant] ?? []);
+  return pool.filter((s) => !sent.includes(s)).slice(0, 4);
 }
 
 export default function App() {

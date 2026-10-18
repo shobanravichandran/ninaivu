@@ -63,7 +63,14 @@ function HandoffFragment() {
 }
 
 /* ---------- Showcase: ask Arjun's memory (real semantic_recall) ---------- */
-const EXAMPLES = ["where does he live", "how should we contact him", "what went wrong last time"];
+const EXAMPLES = [
+  "where does he live",
+  "how should we contact him",
+  "phone or email?",
+  "which town is he in",
+  "what went wrong last time",
+  "how did we fix it",
+];
 const FALLBACK = [
   { key: "contact_preference", text: "Prefers phone calls over email", distance: 0.69 },
   { key: "city", text: "Lives in Coimbatore", distance: 0.89 },
