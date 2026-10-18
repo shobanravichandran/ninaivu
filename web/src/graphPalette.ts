@@ -23,7 +23,12 @@ export function groupOf(label: string) {
   return GROUPS.find((g) => (g.labels as readonly string[]).includes(label)) ?? GROUPS[GROUPS.length - 1];
 }
 
+// The app is dark-only now (same direction as the landing page); kept as a hook so a light theme can return.
 export function useDarkMode(): boolean {
+  return true;
+}
+
+export function usePrefersDark(): boolean {
   const query = "(prefers-color-scheme: dark)";
   const [dark, setDark] = useState(() => window.matchMedia(query).matches);
   useEffect(() => {

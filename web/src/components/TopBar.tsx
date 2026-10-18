@@ -17,7 +17,7 @@ export default function TopBar(props: Props) {
   return (
     <header className="topbar">
       <h1>
-        Ninaivu <span className="muted">graph memory for support agents · FalkorDB</span>
+        <a href="/">Ninaivu</a> <span className="muted">live demo · one memory for every agent</span>
       </h1>
       <label>
         Tenant

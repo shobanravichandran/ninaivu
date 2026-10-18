@@ -20,7 +20,9 @@ function withHandoffs(replies: AgentReply[]): ChatMessage[] {
 
 export default function App() {
   const [tenants, setTenants] = useState<Tenant[]>([]);
-  const [tenant, setTenant] = useState("acme");
+  const params = new URLSearchParams(window.location.search);
+  const [tenant, setTenant] = useState(params.get("tenant") ?? "acme");
+  const wanted = params.get("customer");
   const [customers, setCustomers] = useState<Customer[]>([]);
   const [customerId, setCustomerId] = useState("");
   const [clockOffsetDays, setClockOffsetDays] = useState(0);
@@ -53,7 +55,7 @@ export default function App() {
       .customers(tenant)
       .then((list) => {
         setCustomers(list);
-        setCustomerId(list[0]?.id ?? "");
+        setCustomerId(list.find((c) => c.id === wanted)?.id ?? list[0]?.id ?? "");
       })
       .catch(report);
   }, [tenant]);

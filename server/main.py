@@ -102,6 +102,12 @@ def memory_pack(tenant: str, customer_id: str) -> dict:
     return pack
 
 
+@app.get("/api/recall")
+def recall(tenant: str, customer_id: str, q: str) -> dict:
+    """The landing page's live fragment: semantic_recall on one customer's facts (no LLM call)."""
+    return _with_query_log(lambda: {"results": memory.semantic_recall(tenant, customer_id, q[:160])})
+
+
 @app.get("/api/cypher")
 def cypher(name: str) -> dict:
     try:

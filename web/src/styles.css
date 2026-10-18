@@ -1,31 +1,19 @@
 :root {
-  --bg: #f9f9f7;
-  --surface: #fcfcfb;
-  --text: #0b0b0b;
-  --text-secondary: #52514e;
-  --muted: #6f6e69;
-  --border: #e1e0d9;
-  --accent: #b4532a;
-  --accent-soft: #f6e6dc;
-  --code-bg: #f1f0eb;
-  --radius: 10px;
-  font-family: system-ui, -apple-system, "Segoe UI", sans-serif;
+  /* Same direction as the landing page: Lunar and bronze, Bricolage Grotesque. Dark only. */
+  --bg: #111111;
+  --surface: #1c1c1c;
+  --text: #f2f2f2;
+  --text-secondary: #c9c9c9;
+  --muted: #a3a3a3;
+  --border: #2a2a2a;
+  --accent: #a08672;
+  --accent-soft: #3a322c;
+  --code-bg: #262626;
+  --radius: 6px;
+  font-family: "Bricolage Grotesque", system-ui, sans-serif;
   color: var(--text);
   background: var(--bg);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --bg: #0d0d0d;
-    --surface: #1a1a19;
-    --text: #f0efec;
-    --text-secondary: #c3c2b7;
-    --muted: #9b9a94;
-    --border: #2c2c2a;
-    --accent: #e08a5e;
-    --accent-soft: #3a2a21;
-    --code-bg: #232321;
-  }
+  color-scheme: dark;
 }
 
 * {
@@ -49,9 +37,13 @@ body {
   flex-wrap: wrap;
   align-items: center;
   gap: 12px 16px;
-  padding: 10px 16px;
-  border-bottom: 1px solid var(--border);
-  background: var(--surface);
+  padding: 12px 16px;
+  background: var(--bg);
+}
+
+.topbar h1 a {
+  color: inherit;
+  text-decoration: none;
 }
 
 .topbar h1 {
@@ -69,9 +61,8 @@ body {
 .cost {
   font-variant-numeric: tabular-nums;
   font-size: 13px;
-  padding: 4px 10px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
+  padding: 6px 12px;
+  background: var(--surface);
 }
 
 .muted {
@@ -118,7 +109,7 @@ body {
   min-height: 0;
   overflow: auto;
   padding: 12px;
-  border: 1px solid var(--border);
+  border: 0;
   border-radius: var(--radius);
   background: var(--surface);
 }
@@ -159,15 +150,29 @@ select,
 input {
   font: inherit;
   font-size: 13px;
-  padding: 6px 10px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--surface);
+  padding: 7px 12px;
+  border: 0;
+  border-radius: 0;
+  background: var(--code-bg);
   color: var(--text);
 }
 
 button {
   cursor: pointer;
+  transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+button:hover:not(:disabled) {
+  background: #333333;
+}
+
+button:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+.composer button[type="submit"]:not(:disabled) {
+  background: var(--accent);
+  color: #111111;
 }
 
 button:disabled {
@@ -217,7 +222,7 @@ code {
   max-width: 88%;
   padding: 8px 12px;
   border-radius: var(--radius);
-  border: 1px solid var(--border);
+  background: var(--code-bg);
   white-space: pre-wrap;
 }
 
@@ -231,7 +236,7 @@ code {
   max-width: 95%;
   color: var(--muted);
   font-size: 13px;
-  border-style: dashed;
+  background: none;
 }
 
 .msg.pending {
@@ -267,8 +272,9 @@ code {
 }
 
 .facts li {
-  padding: 4px 0;
-  border-bottom: 1px solid var(--border);
+  padding: 6px 8px;
+  margin-bottom: 4px;
+  background: var(--code-bg);
 }
 
 .facts li.recalled {
@@ -292,8 +298,8 @@ code {
 }
 
 .tabs .active {
-  background: var(--accent-soft);
-  border-color: var(--accent);
+  background: var(--accent);
+  color: #111111;
 }
 
 .count {

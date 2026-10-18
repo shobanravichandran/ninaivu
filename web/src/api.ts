@@ -1,4 +1,4 @@
-import type { ChatRequest, ChatResponse, ContextPack, Customer, EndSessionResponse, GraphData, Tenant } from "./types";
+import type { ChatRequest, ChatResponse, ContextPack, Customer, EndSessionResponse, GraphData, QueryRun, Tenant } from "./types";
 
 export class ApiError extends Error {
   constructor(
@@ -32,5 +32,9 @@ export const api = {
     request<EndSessionResponse>("/sessions/end", { method: "POST", body: JSON.stringify(body) }),
   memory: (tenant: string, customer_id: string) => request<ContextPack>(`/memory?${q({ tenant, customer_id })}`),
   graph: (tenant: string, customer_id: string) => request<GraphData>(`/graph?${q({ tenant, customer_id })}`),
+  recall: (tenant: string, customer_id: string, q: string) =>
+    request<{ results: { key: string; text: string; distance: number }[]; queries: QueryRun[] }>(
+      `/recall?${new URLSearchParams({ tenant, customer_id, q })}`,
+    ),
   cypher: (name: string) => request<{ name: string; cypher: string }>(`/cypher?${q({ name })}`),
 };
