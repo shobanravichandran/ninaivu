@@ -3,7 +3,7 @@
 **Graph memory for support agent swarms, built on FalkorDB.**
 Graph Hacks: Context for AI Agents (WeMakeDevs × FalkorDB) · **Track 02: Agent Memory and Coordination**
 
-**Live demo: <https://ninaivu-ai.vercel.app>** · API health: <https://ninaivu-api.vercel.app/api/health>
+**Live demo: <https://ninaivu-ai.vercel.app>** · **Demo video:** _link coming before submission_ · API health: <https://ninaivu-api.vercel.app/api/health>
 
 *Ninaivu* (நினைவு) is Tamil for "memory".
 
@@ -203,7 +203,7 @@ bill bounded; past it, chat answers with a friendly 429 until midnight UTC.
 
 ## Tests and numbers
 
-- **24 tests**: 17 offline (tool schemas never expose ids, handoff flow, curator, API, cost maths) and 7 live against
+- **25 tests**: 18 offline (tool schemas never expose ids, handoff flow, curator, API, daily cap, cost maths, query files) and 7 live against
   FalkorDB that run every named query, including a 10-thread claim race and tenant isolation.
 - **Load test** ([results](server/scripts/load_test_results.md)): 50 concurrent customers, 1,912 queries,
   FalkorDB server time p50 0.18 ms / p99 0.59 ms; race and isolation pass.
@@ -239,7 +239,7 @@ pip install -r requirements-dev.txt
 pytest                                                # offline tests (no DB, no keys)
 FALKORDB_TEST=1 pytest                                # + live tests against FalkorDB
 python -m seed.generate_data --tenant all --reset     # --fake-embeddings skips Voyage
-python -m scripts.demo_cli --tenant acme --customer c-001   # two-session demo in the terminal (~$0.30)
+python -m scripts.demo_cli --tenant acme --customer c-001   # two-session demo in the terminal (under $0.01)
 python -m scripts.load_test                           # concurrency, race, isolation (no LLM calls)
 python -m scripts.usage_report                        # Claude spend from the local ledger
 uvicorn main:app --reload --port 8000
