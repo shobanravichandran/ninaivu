@@ -125,7 +125,7 @@ html.landing-page body {
   position: relative;
   display: grid;
   grid-template-columns: repeat(12, 1fr);
-  min-height: 100svh;
+  min-height: max(100svh, 880px);
   padding: 0 var(--m);
 }
 
@@ -140,7 +140,7 @@ html.landing-page body {
 
 .lead {
   margin-top: 40px;
-  max-width: 40ch;
+  max-width: 34ch;
   font-size: var(--step-lead);
   line-height: 1.35;
 }
@@ -151,9 +151,9 @@ html.landing-page body {
 
 .stage {
   position: absolute;
-  left: calc(100% * 4 / 12);
+  left: calc(100% * 5 / 12);
   right: 0;
-  top: 46%;
+  top: max(46%, 560px);
   bottom: 0;
   background: var(--accent);
   clip-path: polygon(15% 0, 100% 0, 100% 100%, 0 100%, 0 96px);
