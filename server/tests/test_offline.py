@@ -173,3 +173,20 @@ def test_api_tenants_and_unknown_tenant():
     cypher = client.get("/api/cypher", params={"name": "issue_handoff"}).json()["cypher"]
     assert cypher.startswith("// Coordination") and "ASSIGNED_TO" in cypher
     assert client.get("/api/cypher", params={"name": "../secrets"}).status_code == 404
+
+
+def test_chat_is_refused_with_a_friendly_429_when_the_daily_cap_is_used(monkeypatch):
+    from fastapi.testclient import TestClient
+
+    import main
+    from ninaivu import budget
+
+    def exhausted():
+        raise budget.BudgetExceeded
+
+    monkeypatch.setattr(budget, "take", exhausted)
+    client = TestClient(main.app)
+    res = client.post("/api/chat", json={"tenant": "acme", "customer_id": "c-001", "message": "hi"})
+    assert res.status_code == 429 and "resets at midnight UTC" in res.json()["detail"]
+    res = client.post("/api/sessions/end", json={"tenant": "acme", "customer_id": "c-001", "session_id": "s-1"})
+    assert res.status_code == 429

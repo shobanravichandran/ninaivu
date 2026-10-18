@@ -6,7 +6,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from pydantic import BaseModel
 
-from ninaivu import coordination, llm, memory
+from ninaivu import budget, coordination, llm, memory
 from ninaivu.agents.curator import run_curator
 from ninaivu.agents.orchestrator import handle_message
 from ninaivu.config import TENANTS
@@ -29,6 +29,17 @@ async def unknown_tenant(_: Request, exc: UnknownTenant) -> JSONResponse:
 @app.exception_handler(memory.NotFound)
 async def not_found(_: Request, exc: memory.NotFound) -> JSONResponse:
     return JSONResponse(status_code=404, content={"detail": f"Not found: {exc}"})
+
+
+@app.exception_handler(budget.BudgetExceeded)
+async def budget_exceeded(_: Request, __: budget.BudgetExceeded) -> JSONResponse:
+    return JSONResponse(
+        status_code=429,
+        content={
+            "detail": "The demo has used today's agent turns, to keep costs in check. It resets at midnight UTC. "
+            "Memory, the graph view and the Cypher queries still work, and the demo video shows a full run."
+        },
+    )
 
 
 @app.exception_handler(anthropic.APIError)
@@ -87,11 +98,13 @@ def customers(tenant: str) -> list[dict]:
 
 @app.post("/api/chat")
 def chat(req: ChatRequest) -> dict:
+    budget.take()
     return _with_query_log(handle_message, req.tenant, req.customer_id, req.session_id, req.message, req.clock_offset_days)
 
 
 @app.post("/api/sessions/end")
 def end_session(req: EndSessionRequest) -> dict:
+    budget.take()
     return _with_query_log(run_curator, req.tenant, req.customer_id, req.session_id, req.clock_offset_days)
 
 

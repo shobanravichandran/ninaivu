@@ -9,7 +9,7 @@ EXPECTED = {
     "fact_current", "fact_close_current", "fact_create", "fact_link_supersedes",
     "playbook_find", "playbook_record_outcome",
     "order_lookup", "refund_create", "explain_trace", "customer_graph", "customers_list",
-    "customer_fact_history",
+    "customer_fact_history", "budget_take",
 }
 
 

@@ -34,6 +34,7 @@ class Settings:
     embed_model: str = os.getenv("VOYAGE_MODEL", "voyage-4-lite")
     embed_dim: int = int(os.getenv("EMBED_DIM", "1024"))
     fake_embeddings: bool = _bool("EMBEDDINGS_FAKE")
+    demo_daily_turns: int = int(os.getenv("DEMO_DAILY_TURNS", "150"))  # paid agent turns per UTC day; 0 = no cap
     usage_ledger: str | None = _path("USAGE_LEDGER")  # local JSONL cost ledger; leave unset on Vercel
 
 

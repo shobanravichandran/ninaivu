@@ -198,7 +198,8 @@ LIMIT 5
 All agents run on Claude Opus 5.5 (`claude-opus-5-5`) through the Anthropic SDK's tool runner, with server-side refusal
 fallback enabled. Tools are Python closures bound to `(tenant, customer, session, agent)`, so the model never passes ids.
 Handoffs inside one request are followed up to two hops. Each customer turn costs about $0.05; the UI shows the cost of
-every turn.
+every turn. A daily cap (`DEMO_DAILY_TURNS`, default 150) counted atomically in FalkorDB keeps the public demo's
+bill bounded; past it, chat answers with a friendly 429 until midnight UTC.
 
 ## Tests and numbers
 
