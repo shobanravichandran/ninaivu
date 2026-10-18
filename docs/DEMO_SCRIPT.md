@@ -1,6 +1,6 @@
 # Ninaivu: demo video and presentation script
 
-**Length:** about 3:30 · **Track:** 02, Agent Memory and Coordination
+**Length:** about 5:30 (3:30 without the code walkthrough) · **Track:** 02, Agent Memory and Coordination
 **Landing page:** <https://ninaivu-ai.vercel.app> · **Demo console:** <https://ninaivu-ai.vercel.app/app> ·
 **Repo:** <https://github.com/shobanravichandran/ninaivu>
 
@@ -9,6 +9,7 @@ them.
 
 How to read this: **DO** is what you click, **SAY** is what you speak, word for word. Speak slowly; the cuts in the
 edit will make it feel fast. Each scene stands alone, so you can record it scene by scene and stitch the takes.
+Order: Scenes 1–10 (the product), Part 2 (the code on GitHub), then Scene 11 (the close).
 
 ---
 
@@ -24,7 +25,7 @@ edit will make it feel fast. Each scene stands alone, so you can record it scene
 3. **Browser:** one clean window, bookmarks bar hidden, zoom 90%, 1920×1080. Tabs, in order:
    1. <https://ninaivu-ai.vercel.app> (landing page)
    2. <https://ninaivu-ai.vercel.app/app> (demo console)
-   3. <https://github.com/shobanravichandran/ninaivu> (README)
+   3. <https://github.com/shobanravichandran/ninaivu> (README), plus one tab per link in Part 2
 4. **Recorder:** OBS, Loom, or Windows Game Bar (Win + Alt + R). Do a 10-second mic check. Close notifications.
 5. **Paste, don't type.** Keep the messages from the end of this file in a notepad off-screen. The **Try:** buttons
    in the chat panel also contain every scripted message, so clicking them works too.
@@ -133,76 +134,108 @@ by billing. Send **message 4**: `Any update on my refund?`
 > memory. And the agents' tools are bound to the customer on the server, so the model never passes an id. It can't reach
 > another customer, even by mistake."
 
-### Scene 11 · Close (3:15–3:35) · Tab 1, the "under a millisecond" bars, then the hero
+### Scene 11 · Close (5:15–5:35, after the Part 2 walkthrough) · Tab 1, the landing hero
 
-**DO:** Scroll to the bars section, then back to the top. End card: app URL, repo URL, "Track 02".
+**DO:** Back on the landing hero. End card: app URL, repo URL, "Track 02".
 
 **SAY:**
-> "Under load, fifty customers at once, the median memory query takes under a fifth of a millisecond, and when ten
-> agents grab the same issue at the same moment, exactly one wins. React and FastAPI on Vercel, Claude agents, Voyage
-> embeddings, and FalkorDB doing the memory and the coordination.
+> "So that's Ninaivu. Agents that remember across sessions, share one source of truth about who owns what, learn
+> which fixes work, and keep every company's memory separate, all in FalkorDB, with every answer traceable to the
+> Cypher behind it. React and FastAPI on Vercel, Claude Haiku agents, Voyage embeddings.
 > Ninaivu: one memory for every agent. Thank you."
 
 ---
 
-## Part 2 · Live presentation (if you present to judges, 4–5 minutes)
+## Part 2 · Code walkthrough on GitHub (3:15–5:15, before the close)
 
-Use the same flow with the landing page as your slides. If there's no time for the live chat, skip the console and
-show scenes 3–7 from the "A week later, nobody asks twice" section of the landing page, which replays the same story.
+Record this between Scene 10 and Scene 11. Open each link in its own tab before you start. GitHub highlights the
+lines in the link, so the viewer's eye goes straight to them. Scroll slowly and point with the cursor. If you need a
+shorter video, keep stops C, D and F only (about a minute).
 
-**30-second pitch** (for the start of a call or a submission form):
-> "Ninaivu is a customer support team of AI agents (Triage, Billing, Tech and a Memory Curator) that coordinate only
-> through a FalkorDB graph. Who owns an issue, every handoff, the customer's facts over time, and which fixes actually
-> work are all nodes and edges. So a week later, a different agent picks up exactly where the last one stopped and never
-> asks for the order number again. Each company gets its own graph, and every answer can be traced to the Cypher
-> queries behind it."
+Base URL: `https://github.com/shobanravichandran/ninaivu/blob/main/`
+
+### Stop A · The graph model (15 s) · README
+
+**OPEN:** <https://github.com/shobanravichandran/ninaivu#graph-data-model>
+
+**SAY:**
+> "Here's the whole data model. The customer is the anchor. Sessions and messages are episodic memory. Facts are
+> semantic memory. Playbooks are procedural memory. And the issue's ASSIGNED_TO edge to an agent is the shared state
+> that the agents coordinate on."
+
+### Stop B · Every query is a file (15 s) · `server/queries/` and `db.run`
+
+**OPEN:** <https://github.com/shobanravichandran/ninaivu/tree/main/server/queries>, then
+<https://github.com/shobanravichandran/ninaivu/blob/main/server/ninaivu/db.py#L49-L58>
+
+**SAY:**
+> "There's no Cypher hidden in strings. Every query the product runs is a named file here, about thirty of them. One
+> function runs them: reads go through ro_query, and every call is timed. That's what feeds the Cypher tab you just saw."
+
+### Stop C · Routing comes from the graph (25 s) · `orchestrator.py`
+
+**OPEN:** <https://github.com/shobanravichandran/ninaivu/blob/main/server/ninaivu/agents/orchestrator.py#L92-L111>
+and, in a second tab, <https://github.com/shobanravichandran/ninaivu/blob/main/server/queries/issue_owner.cypher>
+
+**SAY:**
+> "This is the heart of it. Line 92 asks the graph who owns this customer's open issue, and that agent replies. If
+> nobody owns one, Triage does. There's no router model and no in-memory state. Then the loop: each agent gets a fresh
+> context pack from the graph. If it hands off, we read the new owner back from the graph and the next agent runs, up
+> to two hops in one request."
+
+### Stop D · Handoffs are atomic and owner-only (25 s) · `issue_handoff.cypher`, `issue_claim.cypher`
+
+**OPEN:** <https://github.com/shobanravichandran/ninaivu/blob/main/server/queries/issue_handoff.cypher>, then
+<https://github.com/shobanravichandran/ninaivu/blob/main/server/queries/issue_claim.cypher>
+
+**SAY:**
+> "A handoff is one Cypher query. It only matches if the caller is the current owner. Then it deletes the old
+> ASSIGNED_TO edge, creates the new one, and writes a Handoff node with the reason and context, all in one statement.
+> Zero rows back means rejected. Claiming works the same way: assign only if nobody has it yet. Ten agents racing for
+> one issue, exactly one wins, and there's a test for that."
+
+### Stop E · The model never sees an id (20 s) · `tools.py`
+
+**OPEN:** <https://github.com/shobanravichandran/ninaivu/blob/main/server/ninaivu/agents/tools.py#L1-L31>, then
+scroll to <https://github.com/shobanravichandran/ninaivu/blob/main/server/ninaivu/agents/tools.py#L111-L131>
+
+**SAY:**
+> "Tenant isolation is by construction. Every tool is a closure over the turn's context: tenant, customer, session,
+> agent. So the model never passes a customer id and can't ask for someone else's data. Here's the handoff tool: it
+> refuses a handoff to yourself, and if the graph says you're not the owner, it tells the model so."
+
+### Stop F · Facts change, history stays (20 s) · `memory.remember_fact`
+
+**OPEN:** <https://github.com/shobanravichandran/ninaivu/blob/main/server/ninaivu/memory.py#L110-L136>
+
+**SAY:**
+> "Updating a fact is four small queries. Read the current value and skip it if nothing changed. Close the old version
+> by setting valid_to. Create the new one with its embedding and a LEARNED_IN link to the session. Then link
+> SUPERSEDES. We embed before any write, so a failed API call leaves the graph untouched."
+
+### Stop G · Vector search plus graph (20 s) · `semantic_recall.cypher`, `playbook_find.cypher`
+
+**OPEN:** <https://github.com/shobanravichandran/ninaivu/blob/main/server/queries/semantic_recall.cypher>, then
+<https://github.com/shobanravichandran/ninaivu/blob/main/server/queries/playbook_find.cypher>
+
+**SAY:**
+> "Recall uses FalkorDB's vector index, then a graph pattern keeps only this customer's facts that are still true.
+> Playbooks go one step further: find the closest matches by meaning, keep the near-equal ones, then rank them by how
+> often they actually worked. That success rate is learned from every TRIED edge."
+
+### Stop H · Proof (20 s) · tests and load test
+
+**OPEN:** <https://github.com/shobanravichandran/ninaivu/blob/main/server/tests/test_memory_live.py#L68-L87>, then
+<https://github.com/shobanravichandran/ninaivu/blob/main/server/scripts/load_test_results.md>
+
+**SAY:**
+> "And it's tested against a real FalkorDB. Ten threads claim the same issue, and the test asserts one winner and a
+> clean handoff trace. The load test runs fifty concurrent customers: about two thousand queries, median 0.18
+> milliseconds inside FalkorDB. Even the daily cost cap for this public demo is a single atomic query in the graph."
 
 ---
 
-## Part 3 · Q&A prep: be ready to explain these (rule 12)
-
-**The graph model** (README, "Graph data model"):
-- `Customer` is the anchor. `HAD_SESSION → Session → HAS_MESSAGE → Message` (chained with `NEXT`) is episodic memory
-  and the full history.
-- `Customer → RAISED → Issue → ASSIGNED_TO → Agent` is the shared state. Exactly one owner per open issue.
-- `Handoff` nodes (`FROM`, `TO`, `FOR`) carry a reason and a context note. That's the explainable trail.
-- `Customer → HAS_FACT → Fact` is semantic memory. Facts have embeddings, `valid_from`/`valid_to`, `LEARNED_IN` a session,
-  and `SUPERSEDES` the older version.
-- `Issue → TRIED {success} → Playbook` is procedural memory. Success and fail counts rank the playbooks.
-- `Order`, `Product`, `Refund` are the domain data.
-
-**The queries to know by heart:**
-- `issue_owner`: routing. Runs first on every turn.
-- `issue_claim`: the race-safe claim. `WHERE NOT (i)-[:ASSIGNED_TO]->()` inside one query, so 10 concurrent claims
-  give exactly 1 winner (tested).
-- `issue_handoff`: atomic. It matches only if the caller is the current owner, then moves the edge and writes the
-  `Handoff` in the same query. Zero rows means rejected.
-- `semantic_recall`: vector index on `Fact.embedding`, then a graph pattern keeps only this customer's current facts.
-- `playbook_find`: vector search, keep matches within 0.05 of the best, then rank by success rate.
-- `fact_*`: skip if unchanged, close the old version, create the new one, link `SUPERSEDES`.
-
-**The architecture:** React + Vite on Vercel → `/api` rewrite → FastAPI on Vercel (stateless serverless) → FalkorDB
-Cloud (AWS us-east-1, same region as Vercel). Claude Haiku 5.5 runs the agents through the Anthropic tool runner;
-Voyage `voyage-4-lite` makes the 1024-d embeddings. All Cypher lives in `server/queries/*.cypher`, loaded by name.
-
-**Likely questions, with short answers:**
-
-| Question | Answer |
-|---|---|
-| Why a graph and not Postgres or a vector DB? | The questions are about connections: who owns this, what was handed over and why, which fact replaced which, what worked last time for this kind of issue. Each is one pattern match in Cypher. Vector search alone can't do ownership or history, and SQL would need many joins per turn. |
-| What happens if FalkorDB is down? | Nothing can reply. Routing, memory and handoffs all live in the graph, which is the point of the design (rule 3). |
-| How do you stop two agents taking the same issue? | `issue_claim` and `issue_handoff` are single atomic queries with ownership checks. Load test: 10 parallel claims, 1 winner. |
-| How is tenant data kept separate? | One graph per tenant, every query anchored on `Customer {id: $cid}`, and tools are server-side closures bound to tenant and customer, so the model never supplies an id. |
-| How do facts change without losing history? | The old fact gets `valid_to`, the new one `SUPERSEDES` it. The UI shows both. |
-| How does it learn which fix works? | Every attempt writes `TRIED {success}` and updates counters; `playbook_find` ranks near-equal matches by success rate. ZenFiber c-005's history shows a failed restart before a channel change worked. |
-| Why Haiku? | The reasoning is light, because the graph does the remembering. Haiku is about 100× cheaper than Opus per turn (~$0.001) and faster. The model is one env var. |
-| How fast is it? | p50 0.18 ms, p99 0.59 ms per query with 50 concurrent customers. A full turn spends about 25–40 ms in FalkorDB; the rest is model time. |
-| Where's the data from? | All synthetic: fictional companies, Faker names, hand-written sessions and playbooks. |
-| How much did AI write? | Disclosed in the README: Claude Code wrote most of the code under my direction. I chose the track and idea, approved the plan, made the stack decisions, set up FalkorDB, keys and deploys, and tested each step. |
-
----
-
-## Part 4 · Rules check (Graph Hacks rules, checked Oct 18)
+## Part 3 · Rules check (Graph Hacks rules, checked Oct 18)
 
 | Rule | Status | Where |
 |---|---|---|
@@ -222,7 +255,7 @@ Voyage `voyage-4-lite` makes the 1024-d embeddings. All Cypher lives in `server/
 | 10e. Live deployment | ✅ | ninaivu-ai.vercel.app |
 | 10f. Track named | ✅ | |
 | 11. AI assistants disclosed | ✅ | README "AI assistance disclosure" |
-| 12. You can explain the code | ✅ if you rehearse Part 3 | |
+| 12. You can explain the code | ✅ The Part 2 walkthrough shows it | |
 | 13. Meaningful participant contribution | ✅ Described in the disclosure | |
 | 15–18. IP, conduct | ✅ No secrets or private data in the repo (checked the full git history) | |
 
